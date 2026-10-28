@@ -1,0 +1,179 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JoyCraft Digital Product Passport</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f3ff;
+      padding: 30px 15px;
+      color: #222;
+    }
+    .card {
+      max-width: 550px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 4px 18px #0001;
+    }
+    h1 { color: #8338ec; }
+    .field {
+      padding: 12px;
+      margin: 10px 0;
+      background: #f8f7fc;
+      border-radius: 8px;
+    }
+    .label { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>JoyCraft Toys</h1>
+    <h2 id="productName">Loading product...</h2>
+
+    <div class="field">
+      <span class="label">Product ID:</span>
+      <span id="productId"></span>
+    </div>
+
+    <div class="field">
+  <span class="label">Passport ID:</span>
+  <span id="passportId"></span>
+    </div>
+
+    <div class="field">
+      <span class="label">Category:</span>
+      <span id="category"></span>
+    </div>
+    <div class="field">
+      <span class="label">Material:</span>
+      <span id="material"></span>
+    </div>
+    <div class="field">
+      <span class="label">Recommended Age:</span>
+      <span id="age"></span>
+    </div>
+    <div class="field">
+      <span class="label">Country of Origin:</span>
+      <span id="origin"></span>
+    </div>
+    <div class="field">
+      <span class="label">Safety Information:</span>
+      <span id="safety"></span>
+    </div>
+  </div>
+
+  <script>
+   const products = {
+  "JC-TRK-901": {
+    name: "Cyber-car",
+    category: "Vehicle Toy",
+    material: "As specified in product records",
+    age: "As specified in product records",
+    origin: "India",
+    safety: "Refer to the product's actual safety documentation."
+  },
+  "JC-PLY-402": {
+    name: "Wooden-Train",
+    category: "Wooden Toy",
+    material: "Wood",
+    age: "As specified in product records",
+    origin: "India",
+    safety: "Check for loose parts before use."
+  },
+  "JC-RCC-108": {
+    name: "Luxury-Cars",
+    category: "Vehicle Toy",
+    material: "As specified in product records",
+    age: "As specified in product records",
+    origin: "India",
+    safety: "Refer to the product's actual safety documentation."
+  },
+  "JC-WOD-305": {
+    name: "Teddy-Bear",
+    category: "Soft Toy",
+    material: "As specified in product records",
+    age: "As specified in product records",
+    origin: "India",
+    safety: "Inspect stitching and attached parts regularly."
+  },
+  "JC-BLD-712": {
+    name: "Princess Cinderella",
+    category: "Pretend Play Toy",
+    material: "As specified in product records",
+    age: "As specified in product records",
+    origin: "India",
+    safety: "Check accessories for small parts."
+  },
+  "JC-ROB-500": {
+    name: "RoboBuddy AI Companion",
+    category: "Electronic Toy",
+    material: "Electronic components",
+    age: "As specified in product records",
+    origin: "India",
+    safety: "Follow the actual battery and charging instructions."
+  },
+  "JC-TRN-204": {
+    name: "EcoTrain Wooden Express",
+    category: "Wooden Toy",
+    material: "Wood",
+    age: "As specified in product records",
+    origin: "India",
+    safety: "Check for loose parts before use."
+  },
+  "JC-SCI-611": {
+    name: "DinoDig Excavation Kit",
+    category: "Educational Toy",
+    material: "As specified in product records",
+    age: "As specified in product records",
+    origin: "India",
+    safety: "Follow the manufacturer's age and safety guidance."
+  },
+  "JC-CSL-880": {
+    name: "Princess Crystal Castle",
+    category: "Building and Pretend Play Toy",
+    material: "As specified in product records",
+    age: "As specified in product records",
+    origin: "India",
+    safety: "Check for small parts before use."
+  },
+  "JC-MUS-045": {
+    name: "Symphony Xylophone & Drum",
+    category: "Musical Toy",
+    material: "As specified in product records",
+    age: "As specified in product records",
+    origin: "India",
+    safety: "Avoid placing loud sounds close to ears."
+  }
+};
+
+    const params = new URLSearchParams(window.location.search);
+    const sku = params.get("sku");
+    
+    const passportId = params.get("id");
+    const product = products[sku];
+
+document.getElementById("passportId").textContent =
+  passportId || "Not provided";
+
+    if (product) {
+      document.getElementById("productName").textContent = product.name;
+      document.getElementById("productId").textContent = sku;
+      document.getElementById("category").textContent = product.category;
+      document.getElementById("material").textContent = product.material;
+      document.getElementById("age").textContent = product.age;
+      document.getElementById("origin").textContent = product.origin;
+      document.getElementById("safety").textContent = product.safety;
+    } else {
+      document.getElementById("productName").textContent =
+        "Product not found";
+      document.querySelector(".card").innerHTML +=
+        "<p>Please scan a valid JoyCraft product QR code.</p>";
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JoyCraft Toys - Digital Product Passport Generator</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+        onerror="this.onerror=null; this.src='https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js';">
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        toy: {
+                            pink: '#FF6B8B',
+                            yellow: '#FFD166',
+                            turquoise: '#06D6A0',
+                            blue: '#118AB2',
+                            purple: '#8338EC',
+                            orange: '#FF8811',
+                            green: '#2EC4B6'
+                        }
+                    },
+                    animation: {
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'float-medium': 'float 5.5s ease-in-out infinite',
+                        'float-fast': 'float 3.5s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'bounce-subtle': 'bounceSubtle 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-18px) rotate(6deg)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 10px 25px -5px rgba(255, 107, 139, 0.25)' },
+                            '50%': { boxShadow: '0 20px 35px -5px rgba(131, 56, 236, 0.4)' },
+                        },
+                        bounceSubtle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', cursive;
+        }
+
+        /* Dynamic Toy Background Themes */
+        body.theme-whimsical {
+            background: linear-gradient(135deg, #e0f7fa 0%, #fff3e0 50%, #f3e5f5 100%);
+            color: #1e293b;
+        }
+        body.theme-woodcraft {
+            background: linear-gradient(135deg, #fef3c7 0%, #ffedd5 50%, #fef9c3 100%);
+            color: #451a03;
+        }
+        body.theme-cosmic {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            color: #f8fafc;
+        }
+
+        /* Glassmorphism card elements */
+        .glass-card {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        body.theme-whimsical .card-bg,
+        body.theme-woodcraft .card-bg {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        body.theme-cosmic .card-bg {
+            background: rgba(30, 27, 75, 0.88);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #f1f5f9;
+        }
+
+        /* Floating background items */
+        .floating-toy {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.45;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.06));
+        }
+
+        /* Certificate Watermark styling */
+        .cert-watermark {
+            background-image: radial-gradient(circle, rgba(255,107,139,0.04) 10%, transparent 10%);
+            background-size: 20px 20px;
+        }
+
+        /* Custom Scrollbar for document viewer */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(131, 56, 236, 0.3);
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(131, 56, 236, 0.6);
+        }
+    </style>
+</head>
+<body class="theme-whimsical min-h-full flex flex-col justify-between relative overflow-x-hidden">
+
+    <!-- FLOATING TOY BACKGROUND DECORATIONS -->
+    <div id="toy-bg-decorations" class="fixed inset-0 pointer-events-none z-0">
+        <div class="floating-toy animate-float-slow top-12 left-8 text-toy-pink text-6xl">
+            <i class="fa-solid fa-cube"></i>
+        </div>
+        <div class="floating-toy animate-float-medium top-1/4 right-10 text-toy-yellow text-7xl">
+            <i class="fa-solid fa-teddy-bear"></i>
+        </div>
+        <div class="floating-toy animate-float-fast bottom-1/4 left-10 text-toy-purple text-7xl">
+            <i class="fa-solid fa-rocket"></i>
+        </div>
+        <div class="floating-toy animate-float-slow bottom-10 right-1/4 text-toy-turquoise text-6xl">
+            <i class="fa-solid fa-puzzle-piece"></i>
+        </div>
+        <div class="floating-toy animate-float-medium top-1/3 left-1/4 text-toy-orange text-5xl">
+            <i class="fa-solid fa-star"></i>
+        </div>
+        <div class="floating-toy animate-float-fast top-16 right-1/3 text-toy-blue text-5xl">
+            <i class="fa-solid fa-car-side"></i>
+        </div>
+        <div class="floating-toy animate-float-slow bottom-1/3 right-8 text-pink-400 text-6xl">
+            <i class="fa-solid fa-train"></i>
+        </div>
+    </div>
+
+    <!-- MAIN HEADER NAVIGATION BAR -->
+    <header class="relative z-20 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
+        <!-- Brand Logo -->
+        <a href="#" class="flex items-center gap-3 group">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-toy-pink via-toy-yellow to-toy-turquoise flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-300">
+              <a href="https://trividhilabs.com/">
+                <img src="https://trividhilabs.com/assets/img/Trividhi_Labs_Logo2_final.svg"
+                     alt="click here"
+                     width="500">
+              </a>
+            
+            </div>
+            <div>
+                <span class="font-heading text-2xl font-black bg-gradient-to-r from-toy-pink via-toy-purple to-toy-blue bg-clip-text text-transparent">
+                    Trividhi Labs
+                </span>
+                <span class="block text-[10px] font-bold tracking-widest uppercase text-toy-blue -mt-1">Compliance & Safety Portal</span>
+            </div>
+        </a>
+
+        <!-- Header Actions: Theme Switcher & Back Link -->
+        <div class="flex items-center gap-3">
+            <!-- Theme Dropdown Menu -->
+            <div class="relative group">
+                <button class="px-3.5 py-2 rounded-2xl bg-white/80 dark:bg-slate-800/80 shadow-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:scale-105 transition-all flex items-center gap-2 text-xs font-bold backdrop-blur-md">
+                    <i class="fa-solid fa-palette text-toy-purple"></i>
+                    <span class="hidden sm:inline">Theme</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                </button>
+                <div class="absolute right-0 mt-2 w-48 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700 p-2 hidden group-hover:block transition-all z-50">
+                    <div class="text-[10px] font-bold px-3 py-1 text-slate-400 uppercase tracking-wider">Background Theme</div>
+                    <button onclick="switchTheme('whimsical')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold hover:bg-pink-50 dark:hover:bg-slate-700 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-pink-400"></span> Whimsical Pastel
+                    </button>
+                    <button onclick="switchTheme('woodcraft')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-amber-600"></span> Woodcraft Classic
+                    </button>
+                    <button onclick="switchTheme('cosmic')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold hover:bg-purple-950 dark:hover:bg-slate-700 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-indigo-500"></span> Cosmic Space Toys
+                    </button>
+                </div>
+            </div>
+
+            <a href="#" class="px-3.5 py-2 rounded-2xl bg-toy-purple text-white shadow-md hover:bg-purple-700 hover:scale-105 transition-all text-xs font-bold flex items-center gap-2">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span class="hidden sm:inline">Portal Login</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTAINER -->
+    <main class="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8 mb-12">
+        
+        <!-- SECTION 1: MAIN PAGE HEADING -->
+        <div class="text-center max-w-3xl mx-auto space-y-3">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-toy-pink/15 text-toy-pink border border-toy-pink/30 text-xs font-bold uppercase tracking-wider animate-bounce-subtle">
+                <i class="fa-solid fa-passport text-sm"></i> EU & Global Safety Regulation Compliant
+            </div>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
+                Generate Digital Product Passport
+            </h1>
+            <p class="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
+                Compile cryptographic safety compliance certificates, material BOM traceability, environmental impact ratings, and age safety audits into a verified QR-accessible Digital Product Passport (DPP).
+            </p>
+        </div>
+
+        <!-- SECTION 2: MODEL SELECTOR DROPDOWN CARD -->
+        <div class="card-bg glass-card rounded-3xl p-6 shadow-xl border border-white/60 space-y-4 max-w-4xl mx-auto">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-slate-700/60">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-toy-yellow/30 text-toy-orange flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black">Select Toy Model</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Choose a manufactured toy model to load compliance certificates</p>
+                    </div>
+                </div>
+                <div class="text-xs font-bold px-3 py-1 rounded-xl bg-toy-turquoise/20 text-teal-800 dark:text-teal-200 border border-teal-500/30 flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                    <span id="active-model-status">Model Ready for Audit</span>
+                </div>
+            </div>
+
+            <!-- Select Menu Input -->
+            <div class="relative">
+                <i class="fa-solid fa-robot absolute left-4 top-1/2 -translate-y-1/2 text-toy-purple text-lg pointer-events-none"></i>
+                <select id="toy-model-select" onchange="onModelChange()" class="w-full pl-12 pr-10 py-3.5 rounded-2xl bg-white dark:bg-slate-800 border-2 border-toy-purple/30 text-slate-800 dark:text-slate-100 font-bold text-sm sm:text-base focus:outline-none focus:ring-4 focus:ring-toy-purple/20 focus:border-toy-purple shadow-sm transition-all cursor-pointer appearance-none">
+                    <option value="" disabled selected>-- Select Toy Model --</option>
+                    <!-- Populated dynamically via JavaScript -->
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-sm"></i>
+            </div>
+
+            <!-- Dynamic Selected Model Info Metadata Bar -->
+            <div id="model-meta-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
+                <div class="p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                    <span class="block text-[10px] uppercase font-bold text-slate-400">SKU Code</span>
+                    <span id="meta-sku" class="font-bold text-slate-700 dark:text-slate-200">--</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                    <span class="block text-[10px] uppercase font-bold text-slate-400">Toy Category</span>
+                    <span id="meta-category" class="font-bold text-slate-700 dark:text-slate-200">--</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                    <span class="block text-[10px] uppercase font-bold text-slate-400">Target Age</span>
+                    <span id="meta-age" class="font-bold text-slate-700 dark:text-slate-200">--</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                    <span class="block text-[10px] uppercase font-bold text-slate-400">Mfg Facility</span>
+                    <span id="meta-facility" class="font-bold text-slate-700 dark:text-slate-200">--</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW SECTION: TOY PRODUCT IMAGE SHOWCASE PANEL -->
+        <div class="card-bg glass-card rounded-3xl p-6 shadow-xl border border-white/60 space-y-4 max-w-4xl mx-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700/60">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-toy-pink/20 text-toy-pink flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-image"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black">Toy Product Gallery</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Inspect product photos & certified manufacturing views</p>
+                    </div>
+                </div>
+                <span id="gallery-counter" class="text-xs font-bold px-3 py-1 rounded-xl bg-toy-purple/15 text-toy-purple border border-toy-purple/20">
+                    Image 1 of 3
+                </span>
+            </div>
+
+            <!-- Image Carousel Container -->
+            <div class="relative flex items-center justify-center group">
+                <!-- Image Display Area -->
+                <div class="w-full h-64 sm:h-80 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center relative shadow-inner">
+                    <img id="toy-carousel-img" src="" alt="Toy Product Image" class="w-full h-full object-cover transition-all duration-300 transform scale-100 group-hover:scale-105">
+                    
+                    <!-- Caption Overlay -->
+                    <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 text-white flex justify-between items-end">
+                        <div>
+                            <span id="toy-img-title" class="font-heading text-sm sm:text-base font-bold text-white block">Product View</span>
+                            <span id="toy-img-subtitle" class="text-[11px] text-slate-200 font-medium">Standard High-Res View</span>
+                        </div>
+                        <span class="text-[10px] font-mono bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-md text-white border border-white/30">
+                            HD Inspection View
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <!-- Left Button -->
+                <button onclick="navigateToyGallery(-1)" type="button" class="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-2xl bg-white/85 dark:bg-slate-800/85 hover:bg-toy-purple hover:text-white text-slate-700 dark:text-slate-200 shadow-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-10 backdrop-blur-md" title="Previous Image">
+                    <i class="fa-solid fa-chevron-left text-lg"></i>
+                </button>
+
+                <!-- Right Button -->
+                <button onclick="navigateToyGallery(1)" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-2xl bg-white/85 dark:bg-slate-800/85 hover:bg-toy-purple hover:text-white text-slate-700 dark:text-slate-200 shadow-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-10 backdrop-blur-md" title="Next Image">
+                    <i class="fa-solid fa-chevron-right text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Thumbnail Selector Indicators -->
+            <div id="gallery-dots" class="flex items-center justify-center gap-2 pt-1">
+                <!-- Dynamically generated indicators -->
+            </div>
+        </div>
+
+        <!-- SECTION 3: SPLIT PANEL CONTAINER (LEFT BUTTONS & RIGHT DOCUMENT PREVIEW) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- LEFT PANEL: 10 DOCUMENT NAVIGATION BUTTONS (4 Cols on LG) -->
+            <div class="lg:col-span-4 card-bg glass-card rounded-3xl p-5 shadow-xl border border-white/60 space-y-3">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700/60">
+                    <h3 class="font-heading font-black text-base flex items-center gap-2">
+                        <i class="fa-solid fa-folder-tree text-toy-pink"></i>
+                        <span>Compliance Documents</span>
+                    </h3>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                        10 Documents
+                    </span>
+                </div>
+
+                <!-- 10 Interactive Document Buttons Container -->
+                <div id="doc-buttons-list" class="space-y-2 max-h-[580px] overflow-y-auto pr-1 custom-scrollbar">
+                    <!-- Dynamic rendering via JavaScript -->
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: DOCUMENT PREVIEW WINDOW (8 Cols on LG) -->
+            <div class="lg:col-span-8 card-bg glass-card rounded-3xl p-6 sm:p-8 shadow-xl border border-white/60 relative overflow-hidden min-h-[580px] flex flex-col justify-between">
+                
+                <!-- Background Watermark -->
+                <div class="absolute inset-0 cert-watermark pointer-events-none opacity-40"></div>
+
+                <!-- Document Header Overlay -->
+                <div class="relative z-10 space-y-6">
+                    
+                    <!-- Top Cert Seal & Document Meta Title -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b-2 border-slate-200 dark:border-slate-700/80">
+                        <div class="flex items-start gap-4">
+                            <div id="doc-icon-box" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-toy-pink to-toy-purple text-white text-2xl flex items-center justify-center shadow-lg flex-shrink-0">
+                                <i class="fa-solid fa-certificate"></i>
+                            </div>
+                            <div>
+                                <span id="doc-number-badge" class="text-[11px] font-bold tracking-widest uppercase px-2.5 py-0.5 rounded-md bg-toy-purple/10 text-toy-purple border border-toy-purple/20">
+                                    Document 1 of 10
+                                </span>
+                                <h2 id="doc-title" class="text-xl sm:text-2xl font-black mt-1">
+                                    CE Safety Declaration of Conformity
+                                </h2>
+                                <p id="doc-subtitle" class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                    Standard: EN 71 Directive 2009/48/EC Toy Safety
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Official Stamp Badge -->
+                        <div class="sm:text-right flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200 dark:border-slate-700">
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-bold text-xs border border-emerald-300 dark:border-emerald-700">
+                                <i class="fa-solid fa-shield-check text-sm text-emerald-500"></i>
+                                <span id="doc-status-text">OFFICIALLY VERIFIED</span>
+                            </div>
+                            <span id="doc-issue-date" class="text-[10px] text-slate-400 font-mono mt-1">Issued: Oct 2026</span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Model Context Header -->
+                    <div class="p-4 rounded-2xl bg-slate-50/90 dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+                        <div class="space-y-0.5">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold">Target Product Model</span>
+                            <div id="doc-model-name" class="font-heading font-bold text-sm text-toy-purple">
+                                Starlight Rocket Explorer
+                            </div>
+                        </div>
+                        <div class="space-y-0.5">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold">Model SKU</span>
+                            <div id="doc-model-sku" class="font-mono font-bold text-slate-700 dark:text-slate-200">
+                                JC-TRK-901
+                            </div>
+                        </div>
+                        <div class="space-y-0.5">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold">Audit Reference Hash</span>
+                            <div id="doc-audit-hash" class="font-mono font-bold text-slate-500 dark:text-slate-400">
+                                0x9F41...8A21
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Dynamic Document Report Body Content -->
+                    <div id="doc-body-content" class="space-y-4 text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed min-h-[220px]">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+
+                </div>
+
+                <!-- Document Footer Sign-off Block -->
+                <div class="relative z-10 pt-6 mt-6 border-t border-slate-200 dark:border-slate-700/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500">
+                            <i class="fa-solid fa-signature"></i>
+                        </div>
+                        <div class="text-xs">
+                            <span class="block font-bold text-slate-800 dark:text-slate-200">Dr. Elena Rostova</span>
+                            <span class="text-[10px] text-slate-400">Chief Quality & Safety Inspector • JoyCraft HQ</span>
+                        </div>
+                    </div>
+
+                    <div class="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                        Cryptographic Sig: <span class="text-toy-purple font-bold">EN71-VERIFIED-PASS</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- SECTION 4: GENERATE DPP ACTION & ANIMATED PROGRESS BAR -->
+        <div class="card-bg glass-card rounded-3xl p-6 sm:p-8 shadow-xl border border-white/60 space-y-6 text-center max-w-4xl mx-auto">
+            
+            <div class="space-y-2">
+                <h3 class="text-2xl sm:text-3xl font-black">Ready to Publish Digital Passport?</h3>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                    Consolidate all 10 compliance documents above into a tamper-proof EU Digital Product Passport payload and render an official QR Code.
+                </p>
+            </div>
+
+            <!-- BIG GENERATE DPP ACTION BUTTON -->
+            <button id="generate-dpp-btn" onclick="triggerDPPGeneration()" class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-toy-pink via-toy-purple to-toy-blue text-white font-heading font-bold text-lg shadow-xl shadow-toy-purple/30 hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 inline-flex items-center justify-center gap-3 group">
+                <i class="fa-solid fa-qrcode text-xl group-hover:rotate-12 transition-transform"></i>
+                <span id="generate-btn-text">Generate Digital Product Passport (DPP)</span>
+                <i class="fa-solid fa-arrow-right text-sm group-hover:translate-x-1 transition-transform"></i>
+            </button>
+
+            <!-- ANIMATED PROGRESS BAR CONTAINER (Initially Hidden) -->
+            <div id="progress-container" class="hidden max-w-2xl mx-auto space-y-3 pt-4 transition-all">
+                <div class="flex justify-between items-center text-xs font-bold">
+                    <span id="progress-status-text" class="text-toy-purple flex items-center gap-2">
+                        <i class="fa-solid fa-arrows-spin animate-spin text-sm"></i>
+                        <span>Aggregating 10 Compliance Certificates...</span>
+                    </span>
+                    <span id="progress-percent" class="font-mono text-toy-pink font-extrabold text-sm">0%</span>
+                </div>
+
+                <!-- Outer Track -->
+                <div class="w-full h-4 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden p-0.5 shadow-inner">
+                    <!-- Inner Bar -->
+                    <div id="progress-fill" class="h-full bg-gradient-to-r from-toy-pink via-toy-yellow to-toy-turquoise rounded-full transition-all duration-300 w-0"></div>
+                </div>
+
+                <!-- Steps Indicator List -->
+                <div class="grid grid-cols-4 gap-2 text-[10px] font-bold text-slate-400 pt-1">
+                    <div id="step-1" class="transition-colors">1. Cert Fetch</div>
+                    <div id="step-2" class="transition-colors">2. Crypto Hash</div>
+                    <div id="step-3" class="transition-colors">3. EU Payload</div>
+                    <div id="step-4" class="transition-colors">4. QR Encoding</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SECTION 5: DPP QR CODE & LINK RESULT DISPLAY CARD (Revealed after generation) -->
+        <div id="dpp-result-card" class="hidden card-bg glass-card rounded-3xl p-6 sm:p-10 shadow-2xl border-2 border-toy-turquoise/40 space-y-8 animate-pulse-glow max-w-4xl mx-auto">
+            
+            <!-- Result Banner Header -->
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-500 text-3xl flex items-center justify-center mx-auto shadow-inner animate-bounce-subtle">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-black">Digital Product Passport Generated!</h2>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
+                    Official DPP compliance record is now cryptographically registered and ready for EU & CPSC scanning.
+                </p>
+            </div>
+
+            <!-- QR Code & Key Info Grid -->
+            <div class="flex flex-col md:flex-row items-center justify-center gap-8 p-6 rounded-3xl bg-slate-50/90 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                
+                <!-- QR CODE CONTAINER -->
+                <div class="flex flex-col items-center gap-3">
+                    <div id="qrcode-box" class="p-4 bg-white rounded-2xl shadow-xl border-4 border-toy-turquoise/30 flex items-center justify-center min-w-[190px] min-h-[190px]">
+                        <!-- QRCode rendered via qrcode.js -->
+                    </div>
+                    <span id="qr-label-name" class="font-heading font-bold text-xs text-toy-purple text-center">
+                        DPP for Starlight Rocket Explorer
+                    </span>
+                </div>
+
+                <!-- Passport Summary Specs -->
+                <div class="space-y-3 text-xs w-full max-w-sm">
+                    <div class="flex justify-between py-1.5 border-b border-slate-200 dark:border-slate-700">
+                        <span class="text-slate-400 font-medium">Model ID:</span>
+                        <span id="res-model-name" class="font-bold text-slate-800 dark:text-slate-100">Starlight Rocket Explorer</span>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-slate-200 dark:border-slate-700">
+                        <span class="text-slate-400 font-medium">SKU Code:</span>
+                        <span id="res-model-sku" class="font-mono font-bold text-toy-purple">JC-TRK-901</span>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-slate-200 dark:border-slate-700">
+                        <span class="text-slate-400 font-medium">Passport Identifier:</span>
+                        <span id="res-passport-id" class="font-mono font-bold text-emerald-600 dark:text-emerald-400">DPP-2026-98412</span>
+                    </div>
+                    <div class="flex justify-between py-1.5 border-b border-slate-200 dark:border-slate-700">
+                        <span class="text-slate-400 font-medium">Included Documents:</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-100">10 Verified Certificates</span>
+                    </div>
+                    <div class="flex justify-between py-1.5">
+                        <span class="text-slate-400 font-medium">EU Compliance Standard:</span>
+                        <span class="font-bold text-toy-pink">ISO 28219 / EN 71</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- EXACT LINK URL & COPY / DOWNLOAD ACTION BAR -->
+            <div class="space-y-3">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 text-center">
+                    Direct Digital Passport Verification URL:
+                </label>
+                
+                <div class="flex flex-col sm:flex-row items-center gap-2">
+                    <!-- URL Display Text Input -->
+                    <div class="relative w-full">
+                        <i class="fa-solid fa-link absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="dpp-link-input" readonly value="https://dpp.joycraft-toys.com/v1/passport?model=JC-TRK-901&id=DPP-2026-98412" class="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-xs text-slate-700 dark:text-slate-200 focus:outline-none">
+                    </div>
+
+                    <!-- Copy Button -->
+                    <button onclick="copyDPPLink()" class="w-full sm:w-auto px-6 py-3 rounded-2xl bg-toy-purple hover:bg-purple-700 text-white text-xs font-bold shadow-md hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>Copy Link</span>
+                    </button>
+                </div>
+
+                <!-- Additional Action Buttons -->
+                <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    <button onclick="downloadSummaryPDF()" class="px-5 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-file-pdf text-red-500 text-sm"></i>
+                        <span>Download DPP Summary PDF</span>
+                    </button>
+                    <button onclick="window.print()" class="px-5 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-print text-toy-blue text-sm"></i>
+                        <span>Print Passport Certificate</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- FOOTER -->
+    <footer class="relative z-10 py-6 border-t border-slate-200/60 dark:border-slate-800 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
+        © 2026 JoyCraft Toys Ltd. • EU Digital Product Passport (DPP) Framework Directive 2024/1781 • ISO 9001
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <script>
+        // 1. DATA: 10 REALISTIC TOY MODELS WITH IMAGE GALLERIES
+        const TOY_MODELS = [
+            { 
+                id: 'JC-TRK-901', 
+                name: 'Cyber-car', 
+                sku: 'JC-TRK-901', 
+                category: 'Road-based-toys', 
+                age: '6+ Years', 
+                facility: 'Factory 01 - Nuremberg DE',
+                images: [
+                    { url: 'https://media.istockphoto.com/id/183545763/photo/neon-anatomy-of-an-automobile-on-black-background.jpg?s=2048x2048&w=is&k=20&c=CeAIv50QcW8KenrG9GPiGaaT41rQAPLPyd2sdoPDCtI=', title: 'Cyber-car - Front Angle', subtitle: 'Primary composite shell with non-toxic outer finish' },
+                    { url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1000&q=80', title: 'Thruster & Base Assembly', subtitle: 'Impact testing certified ignition mechanism casing' },
+                    { url: 'https://media.istockphoto.com/id/173655507/photo/car-blueprint-wireframe-with-clipping-path.jpg?s=612x612&w=0&k=20&c=1kXDxkgkKfmzURNKAlPnxT5mZKe3UolQj2aV7ouj1NQ=', title: 'Packaging & User Guide', subtitle: '100% Recyclable soy-ink cardboard box presentation' }
+                ]
+            },
+            { 
+                id: 'JC-PLY-402', 
+                name: 'Wooden-Train', 
+                sku: 'JC-PLY-402', 
+                category: 'Soft Plush & Fabrics', 
+                age: '0+ Months', 
+                facility: 'Factory 03 - Lyon FR',
+                images: [
+                    { url: 'https://thumbs.dreamstime.com/b/eco-friendly-plastic-free-toys-toddler-stylish-wooden-toy-train-colorful-blocs-child-ai-generated-modern-tactile-270929445.jpg', title: 'Plush Bear Front View', subtitle: '100% Organic hypoallergenic cotton filling' },
+                    { url: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=1000&q=80', title: 'Seam Integrity Inspection', subtitle: 'Double-stitched safety seams certified under EN 71-1' },
+                    { url: 'https://thumbs.dreamstime.com/b/eco-friendly-plastic-free-toys-toddler-stylish-wooden-toy-train-child-ai-generated-modern-tactile-colorful-270929268.jpg?w=992', title: 'Safety Tag & Certification', subtitle: 'Soft touch anti-choke embroidered label' }
+                ]
+            },
+            { 
+                id: 'JC-RCC-108', 
+                name: 'Luxury-Cars', 
+                sku: 'JC-RCC-108', 
+                category: 'Electronics & RC', 
+                age: '8+ Years', 
+                facility: 'Factory 02 - Hsinchu TW',
+                images: [
+                    { url: 'https://static0.carbuzzimages.com/wordpress/wp-content/uploads/2024/03/947418-7.jpg', title: 'RC Speedster Body', subtitle: 'RoHS 3 compliant ABS polymer aerodynamic shell' },
+                    { url: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1000&q=80', title: 'Dual-Motor Chassis', subtitle: 'Over-voltage battery enclosure with safety cutoff' },
+                    { url: 'https://static1.topspeedimages.com/wordpress/wp-content/uploads/2023/09/2024-lexus-lc.jpg', title: '2.4GHz Wireless Controller', subtitle: 'Ergonomic non-slip grips for safe handling' }
+                ]
+            },
+            { 
+                id: 'JC-WOD-305', 
+                name: 'Teddy-Bear', 
+                sku: 'JC-WOD-305', 
+                category: 'Wool Educational', 
+                age: '1+ Years', 
+                facility: 'Factory 04 - Black Forest DE',
+                images: [
+                    { url: 'https://i5.walmartimages.com/seo/LotFancy-12-in-Brown-Teddy-Bear-Stuffed-Animal-Plush-Toy_a066898a-c4a6-4019-a3c8-1e13f2c9dc39.f9d13303c3d99fa4ab6a31262cf1a07f.jpeg', title: 'Sorting Blocks Set', subtitle: '100% Sustainable FSC-certified solid beech wood' },
+                    { url: 'https://wallpapers.com/images/hd/teddy-bear-pictures-dwlgjzs7ay3xgahw.jpg', title: 'Water-Based Stains', subtitle: 'Non-toxic organic dye application detail' },
+                    { url: 'https://laz-img-sg.alicdn.com/p/38686a49d2e2916f6f54b68e86c745cc.jpg', title: 'Rounded Safety Edges', subtitle: 'Zero sharp points cylinder test passed' }
+                ]
+            },
+            { 
+                id: 'JC-BLD-712', 
+                name: ' Princess Cinderella', 
+                sku: 'JC-BLD-712', 
+                category: 'Construction Blocks', 
+                age: '5+ Years', 
+                facility: 'Factory 01 - Nuremberg DE',
+                images: [
+                    { url: 'https://i5.walmartimages.com/seo/Disney-Princess-Cinderella-Small-Doll-Plush-with-Tag_ea2d4c1e-19f1-432d-a8e4-ed18a37ea899.f614169465f955e2d95f7c5e4613945f.png', title: 'Architectural Tiles Assembly', subtitle: 'Ultrasonically riveted magnetic core edges' },
+                    { url: 'https://m.media-amazon.com/images/I/81H19UpSJTL._AC_SL1500_.jpg', title: 'Transparent Colors View', subtitle: 'BPA-free high-clarity grade acrylics' },
+                    { url: 'https://tse4.mm.bing.net/th/id/OIP.DU3RMALGYWQJxStdVJykvgHaGY?r=0&pid=Api&h=220&P=0', title: 'Full Construction Kit', subtitle: 'Includes 100 modular geometric tiles' }
+                ]
+            },
+            { 
+                id: 'JC-ROB-500', 
+                name: 'RoboBuddy AI Companion', 
+                sku: 'JC-ROB-500', 
+                category: 'Interactive Robotics', 
+                age: '7+ Years', 
+                facility: 'Factory 02 - Hsinchu TW',
+                images: [
+                    { url: 'https://i.pinimg.com/originals/f4/de/51/f4de51d7b7ae7628250e7432a55204e6.jpg', title: 'RoboBuddy Unit', subtitle: 'Voice-interactive robotic assistant with LED face panel' },
+                    { url: 'https://images.unsplash.com/photo-1535378917042-10a22c95931a?auto=format&fit=crop&w=1000&q=80', title: 'Sensor & Camera Module', subtitle: 'EU GDPR compliant privacy-by-design optical sensors' },
+                    { url: 'https://images.unsplash.com/photo-1563206767-5b18f218e8de?auto=format&fit=crop&w=1000&q=80', title: 'Charging Dock & Battery', subtitle: 'EN 62115 short-circuit safety guarded base' }
+                ]
+            },
+            { 
+                id: 'JC-TRN-204', 
+                name: 'EcoTrain Wooden Express', 
+                sku: 'JC-TRN-204', 
+                category: 'Wooden Rail Sets', 
+                age: '2+ Years', 
+                facility: 'Factory 04 - Black Forest DE',
+                images: [
+                    { url: 'https://images.unsplash.com/photo-1472457897821-70d3819a0e24?auto=format&fit=crop&w=1000&q=80', title: 'Wooden Express Engine', subtitle: 'FSC-certified maple wood with magnetic couplings' },
+                    { url: 'https://images.unsplash.com/photo-1531685250784-7569952593d2?auto=format&fit=crop&w=1000&q=80', title: 'Interlocking Track Sections', subtitle: 'Precision milled track connectors' },
+                    { url: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=1000&q=80', title: 'Complete Playset Overview', subtitle: 'Includes 3 wagons, bridge, and signal posts' }
+                ]
+            },
+            { 
+                id: 'JC-SCI-611', 
+                name: 'DinoDig Excavation Kit', 
+                sku: 'JC-SCI-611', 
+                category: 'STEM & Science', 
+                age: '8+ Years', 
+                facility: 'Factory 05 - Krakow PL',
+                images: [
+                    { url: 'https://images.unsplash.com/photo-1530210124550-912dc1381cb8?auto=format&fit=crop&w=1000&q=80', title: 'Excavation Block & Tools', subtitle: 'Dust-free non-toxic plaster matrix with safety goggles' },
+                    { url: 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=1000&q=80', title: 'Replica Fossil Specimen', subtitle: 'High precision resin molded dinosaur skeleton' },
+                    { url: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1000&q=80', title: 'STEM Field Activity Guide', subtitle: 'Multi-language paleontology learning booklet' }
+                ]
+            },
+            { 
+                id: 'JC-CSL-880', 
+                name: 'Princess Crystal Castle', 
+                sku: 'JC-CSL-880', 
+                category: 'Playsets & Figures', 
+                age: '4+ Years', 
+                facility: 'Factory 01 - Nuremberg DE',
+                images: [
+                    { url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1000&q=80', title: 'Crystal Castle Facade', subtitle: 'Shatter-proof resin turrets with integrated LED lights' },
+                    { url: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=1000&q=80', title: 'Interior Furniture & Figures', subtitle: 'Small parts cylinder safety verified figures' },
+                    { url: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1000&q=80', title: 'Illuminated Night View', subtitle: 'Low voltage battery powered ambient lighting' }
+                ]
+            },
+            { 
+                id: 'JC-MUS-045', 
+                name: 'Symphony Xylophone & Drum', 
+                sku: 'JC-MUS-045', 
+                category: 'Musical Toys', 
+                age: '3+ Years', 
+                facility: 'Factory 03 - Lyon FR',
+                images: [
+                    { url: 'https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?auto=format&fit=crop&w=1000&q=80', title: 'Symphony Xylophone View', subtitle: 'Acoustically tuned metal keys with non-lead paint coating' },
+                    { url: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1000&q=80', title: 'Soft Rubber Mallets', subtitle: 'Child-safe flexible handles to prevent injuries' },
+                    { url: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1000&q=80', title: 'Integrated Storage Base', subtitle: 'Solid beech wood frame with built-in mallet slots' }
+                ]
+            }
+        ];
+
+        // 2. DATA: 10 COMPLIANCE DOCUMENTS
+        const DOCUMENTS = [
+            {
+                id: 1,
+                label: "CE Safety Cert",
+                badge: "Click",
+                title: "CE Safety Declaration of Conformity",
+                subtitle: "European Toy Safety Directive 2009/48/EC (EN 71-1, 71-2, 71-3)",
+                icon: "fa-shield-halved",
+                color: "from-toy-pink to-pink-600",
+                status: "VERIFIED COMPLIANT",
+                hash: "0x8F92...11C4",
+                getContent: (m) => `
+                    <p>This certifies that <strong>${m.name}</strong> (SKU: ${m.sku}) complies fully with European Union Toy Safety Directive 2009/48/EC standards:</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 my-3">
+                        <div class="p-2.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                            <span class="block text-[10px] text-slate-400 font-bold uppercase">EN 71-1</span>
+                            <span class="font-bold text-emerald-600 dark:text-emerald-400">Mechanical Passed</span>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                            <span class="block text-[10px] text-slate-400 font-bold uppercase">EN 71-2</span>
+                            <span class="font-bold text-emerald-600 dark:text-emerald-400">Flammability Passed</span>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                            <span class="block text-[10px] text-slate-400 font-bold uppercase">EN 71-3</span>
+                            <span class="font-bold text-emerald-600 dark:text-emerald-400">Migration Passed</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500">Tested by Accredited Laboratory Eurofins DE. Risk Assessment classification: Low Risk Age Grade (${m.age}).</p>
+                `
+            },
+            {
+                id: 2,
+                label: "ASTM F963 Report",
+                badge: "Click",
+                title: "ASTM F963 US Consumer Product Safety Cert",
+                subtitle: "CPSC Standard Specification for Toy Safety (16 CFR 1250)",
+                icon: "fa-flag-usa",
+                color: "from-toy-blue to-indigo-600",
+                status: "CPSC REGISTERED",
+                hash: "0x4A11...99B2",
+                getContent: (m) => `
+                    <p>Independent CPSC accredited laboratory test results for product entry into United States commerce for model <strong>${m.name}</strong>:</p>
+                    <table class="w-full text-left border-collapse my-3">
+                        <thead>
+                            <tr class="border-b border-slate-200 dark:border-slate-700 text-[10px] uppercase text-slate-400">
+                                <th class="py-1">Test Parameter</th>
+                                <th class="py-1">Threshold</th>
+                                <th class="py-1">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-xs font-semibold">
+                            <tr><td class="py-1.5">Heavy Elements (Lead & Cadmium)</td><td>&lt; 90 ppm</td><td class="text-emerald-500">0.2 ppm (PASS)</td></tr>
+                            <tr><td class="py-1.5">Sharp Edge & Point Testing</td><td>Zero sharp points</td><td class="text-emerald-500">100% PASS</td></tr>
+                            <tr><td class="py-1.5">Impact & Drop Endurance</td><td>5 Drop Cycles (3 ft)</td><td class="text-emerald-500">No Fracture (PASS)</td></tr>
+                        </tbody>
+                    </table>
+                `
+            },
+            {
+                id: 3,
+                label: "Chemical BOM",
+                badge: "Click",
+                title: "Chemical & Toxicological Material Audit",
+                subtitle: "REACH Annex XVII & CPSIA Phthalate Content Verification",
+                icon: "fa-flask",
+                color: "from-toy-turquoise to-teal-700",
+                status: "NON-TOXIC CERTIFIED",
+                hash: "0x3C88...77F1",
+                getContent: (m) => `
+                    <p>Bill of Materials (BOM) chemical screening for model <strong>${m.sku}</strong>. No hazardous phthalates or toxic plasticizers detected.</p>
+                    <ul class="space-y-1.5 my-3 text-xs">
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> BPA-Free & Phthalate-Free polymers (DEHP, DBP, BBP 0.00%)</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Organic soy-based non-toxic water insoluble surface coatings</li>
+                        <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Heavy metal migration levels &lt; 0.001 mg/kg limit</li>
+                    </ul>
+                `
+            },
+            {
+                id: 4,
+                label: "Carbon Footprint",
+                badge: "Click",
+                title: "Environmental Lifecycle Assessment (LCA)",
+                subtitle: "ISO 14067 Carbon Footprint & Recyclability Rating",
+                icon: "fa-leaf",
+                color: "from-emerald-400 to-green-600",
+                status: "ECO GOLD GRADE",
+                hash: "0x1E55...33D8",
+                getContent: (m) => `
+                    <p>Lifecycle carbon footprint evaluation for manufacturing model <strong>${m.name}</strong> at ${m.facility}:</p>
+                    <div class="grid grid-cols-2 gap-3 my-3">
+                        <div class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+                            <span class="block text-[10px] text-emerald-600 font-bold uppercase">Total CO2e Impact</span>
+                            <span class="text-lg font-black text-emerald-700 dark:text-emerald-300">0.84 kg CO2e / unit</span>
+                        </div>
+                        <div class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+                            <span class="block text-[10px] text-emerald-600 font-bold uppercase">Recyclability Score</span>
+                            <span class="text-lg font-black text-emerald-700 dark:text-emerald-300">94.5% Circular</span>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 5,
+                label: "Supply Traceability",
+                badge: "Click",
+                title: "Supply Chain & Material Origin Traceability",
+                subtitle: "Tier 1 to Tier 3 Ethical Supplier Provenance Log",
+                icon: "fa-diagram-project",
+                color: "from-toy-purple to-indigo-800",
+                status: "100% TRACEABLE",
+                hash: "0x9D00...44E2",
+                getContent: (m) => `
+                    <p>Raw material sourcing log for SKU <strong>${m.sku}</strong> across verified ethical supply chain nodes:</p>
+                    <div class="space-y-2 my-3 text-xs">
+                        <div class="flex justify-between items-center p-2 rounded-xl bg-slate-100 dark:bg-slate-800">
+                            <span><strong>Tier 1 Assembly:</strong> ${m.facility}</span>
+                            <span class="text-toy-purple font-mono font-bold">100% Certified</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2 rounded-xl bg-slate-100 dark:bg-slate-800">
+                            <span><strong>Tier 2 Polymers / Timber:</strong> FSC Sourced Europe / Asia</span>
+                            <span class="text-toy-purple font-mono font-bold">FSC-C10482</span>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 6,
+                label: "Age Risk Audit",
+                badge: "Click",
+                title: "Age Appropriateness & Choking Hazard Audit",
+                subtitle: "CPSC 16 CFR 1501 Small Parts Cylinder Test",
+                icon: "fa-child-reaching",
+                color: "from-toy-orange to-red-500",
+                status: "AGE AUDITED",
+                hash: "0x7F22...55A1",
+                getContent: (m) => `
+                    <p>Safety assessment determining recommended target age for <strong>${m.name}</strong>:</p>
+                    <div class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 my-3 text-xs space-y-1">
+                        <div class="font-bold text-amber-800 dark:text-amber-200 flex items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Target Age Category: ${m.age}
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-300">Small parts cylinder test verified. Choking warning labels generated in compliance with CPSC 16 CFR 1501.</p>
+                    </div>
+                `
+            },
+            {
+                id: 7,
+                label: "RoHS/Battery Cert",
+                badge: "Click",
+                title: "RoHS 3 & Electric Toy Safety Certificate",
+                subtitle: "Directive 2011/65/EU & EN 62115 Safety Standards",
+                icon: "fa-bolt",
+                color: "from-yellow-400 to-amber-600",
+                status: "ROHS COMPLIANT",
+                hash: "0x2B99...88C3",
+                getContent: (m) => `
+                    <p>Restriction of Hazardous Substances (RoHS 3) evaluation for model <strong>${m.sku}</strong> electronics and power supply units:</p>
+                    <ul class="list-disc pl-5 my-3 space-y-1 text-xs">
+                        <li>Lead, Mercury, Cadmium, Hexavalent Chromium &lt; 0.01% limit</li>
+                        <li>Over-voltage and short-circuit battery enclosure safety passed (EN 62115)</li>
+                    </ul>
+                `
+            },
+            {
+                id: 8,
+                label: "User Manual",
+                badge: "Click",
+                title: "User Safety & Product Care Instruction Manual",
+                subtitle: "Multi-language Consumer Operating Guide",
+                icon: "fa-book-open-reader",
+                color: "from-toy-pink to-purple-600",
+                status: "PUBLISHED",
+                hash: "0x6E44...22B1",
+                getContent: (m) => `
+                    <p>Digital instruction booklet and maintenance manual for model <strong>${m.name}</strong>:</p>
+                    <div class="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 my-3 text-xs space-y-2">
+                        <div class="font-bold">Languages Included:</div>
+                        <div class="flex flex-wrap gap-1.5 text-[10px]">
+                            <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-700 font-bold">🇬🇧 EN</span>
+                            <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-700 font-bold">🇩🇪 DE</span>
+                            <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-700 font-bold">🇫🇷 FR</span>
+                            <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-700 font-bold">🇪🇸 ES</span>
+                            <span class="px-2 py-0.5 rounded bg-white dark:bg-slate-700 font-bold">🇮🇹 IT</span>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 9,
+                label: "Sustainable Packaging",
+                badge: "Click",
+                title: "Sustainable Packaging & Recyclability Attestation",
+                subtitle: "PPWR Packaging and Packaging Waste Regulation Standard",
+                icon: "fa-box-tissue",
+                color: "from-teal-400 to-emerald-600",
+                status: "100% RECYCLABLE",
+                hash: "0x5D77...11A9",
+                getContent: (m) => `
+                    <p>Packaging material audit for retail shipment box of <strong>${m.name}</strong>:</p>
+                    <div class="p-3 rounded-2xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 my-3 text-xs space-y-1">
+                        <div class="font-bold text-teal-800 dark:text-teal-200">Zero Plastic Packaging</div>
+                        <p>100% FSC Mix recycled cardboard with water-based soy ink printing. Fully biodegradable in 60 days.</p>
+                    </div>
+                `
+            },
+            {
+                id: 10,
+                label: "Warranty Cert",
+                badge: "Click",
+                title: "Manufacturer Quality & Craftsmanship Warranty",
+                subtitle: "JoyCraft HQ ISO 9001 Factory Quality Control Guarantee",
+                icon: "fa-award",
+                color: "from-amber-400 to-toy-orange",
+                status: "5-YEAR GUARANTEE",
+                hash: "0x1F33...99C0",
+                getContent: (m) => `
+                    <p>Official Manufacturer Warranty issued by JoyCraft HQ for toy model <strong>${m.name}</strong> (SKU: ${m.sku}):</p>
+                    <div class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 my-3 text-xs">
+                        <span class="font-bold block text-amber-900 dark:text-amber-200">5-Year Structural Craftsmanship Warranty</span>
+                        <span>Covers replacement parts, seam structural integrity, and electronic unit repairs.</span>
+                    </div>
+                `
+            }
+        ];
+
+        // CURRENT STATE
+        let selectedModel = TOY_MODELS[0];
+        let currentImageIndex = 0;
+        let selectedDocIndex = 0;
+        let qrCodeInstance = null;
+
+        // INITIALIZATION ON PAGE LOAD
+        window.onload = function() {
+            populateModelSelect();
+            renderDocButtons();
+            updateModelMetaUI();
+            updateToyGalleryUI();
+            renderCurrentDocView();
+        };
+
+        // POPULATE MODEL SELECTOR
+        function populateModelSelect() {
+            const selectEl = document.getElementById('toy-model-select');
+            selectEl.innerHTML = '<option value="" disabled>-- Select Toy Model --</option>';
+
+            TOY_MODELS.forEach((m, idx) => {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                opt.textContent = `${idx + 1}. ${m.name} (SKU: ${m.sku})`;
+                if (idx === 0) opt.selected = true;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        // MODEL CHANGE HANDLER
+        function onModelChange() {
+            const selectEl = document.getElementById('toy-model-select');
+            const found = TOY_MODELS.find(m => m.id === selectEl.value);
+            if (found) {
+                selectedModel = found;
+                currentImageIndex = 0; // Reset image index on model change
+                updateModelMetaUI();
+                updateToyGalleryUI();
+                renderCurrentDocView();
+                showToast(`Selected Model: ${selectedModel.name}`, 'info');
+            }
+        }
+
+        // UPDATE MODEL METADATA UI BAR
+        function updateModelMetaUI() {
+            document.getElementById('meta-sku').textContent = selectedModel.sku;
+            document.getElementById('meta-category').textContent = selectedModel.category;
+            document.getElementById('meta-age').textContent = selectedModel.age;
+            document.getElementById('meta-facility').textContent = selectedModel.facility;
+        }
+
+        // UPDATE TOY GALLERY SHOWCASE PANEL
+        function updateToyGalleryUI() {
+            if (!selectedModel.images || selectedModel.images.length === 0) return;
+
+            const total = selectedModel.images.length;
+            if (currentImageIndex >= total) currentImageIndex = 0;
+            if (currentImageIndex < 0) currentImageIndex = total - 1;
+
+            const imgData = selectedModel.images[currentImageIndex];
+
+            const imgEl = document.getElementById('toy-carousel-img');
+            imgEl.src = imgData.url;
+            imgEl.alt = imgData.title;
+
+            document.getElementById('toy-img-title').textContent = imgData.title;
+            document.getElementById('toy-img-subtitle').textContent = imgData.subtitle;
+            document.getElementById('gallery-counter').textContent = `Image ${currentImageIndex + 1} of ${total}`;
+
+            // Render Dot Indicators
+            const dotsContainer = document.getElementById('gallery-dots');
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < total; i++) {
+                const dot = document.createElement('button');
+                dot.type = 'button';
+                dot.onclick = () => setGalleryImage(i);
+                dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${
+                    i === currentImageIndex 
+                    ? 'bg-toy-purple w-6' 
+                    : 'bg-slate-300 dark:bg-slate-700 hover:bg-toy-pink'
+                }`;
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        // NAVIGATE TOY GALLERY (LEFT / RIGHT)
+        function navigateToyGallery(direction) {
+            currentImageIndex += direction;
+            updateToyGalleryUI();
+        }
+
+        // SET SPECIFIC GALLERY IMAGE
+        function setGalleryImage(index) {
+            currentImageIndex = index;
+            updateToyGalleryUI();
+        }
+
+        // RENDER 10 DOCUMENT BUTTONS ON LEFT PANEL
+        function renderDocButtons() {
+            const listContainer = document.getElementById('doc-buttons-list');
+            listContainer.innerHTML = '';
+
+            DOCUMENTS.forEach((doc, idx) => {
+                const isActive = idx === selectedDocIndex;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => selectDoc(idx);
+
+                btn.className = `w-full p-3 rounded-2xl text-left transition-all duration-200 flex items-center justify-between gap-3 border ${
+                    isActive 
+                    ? 'bg-gradient-to-r from-toy-pink/15 via-toy-purple/15 to-toy-blue/15 border-toy-purple shadow-md ring-2 ring-toy-purple/30' 
+                    : 'bg-white/70 dark:bg-slate-800/70 border-slate-200/80 dark:border-slate-700/80 hover:bg-slate-100 dark:hover:bg-slate-700/80'
+                }`;
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-tr ${doc.color} text-white flex items-center justify-center text-xs shadow-sm flex-shrink-0">
+                            <i class="fa-solid ${doc.icon}"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold ${isActive ? 'text-toy-purple font-black' : 'text-slate-700 dark:text-slate-200'}">
+                                ${doc.label}
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-medium truncate max-w-[150px]">
+                                ${doc.badge}
+                            </div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-[10px] ${isActive ? 'text-toy-purple translate-x-0.5' : 'text-slate-300'}"></i>
+                `;
+
+                listContainer.appendChild(btn);
+            });
+        }
+
+        // SELECT DOCUMENT HANDLER
+        function selectDoc(index) {
+            selectedDocIndex = index;
+            renderDocButtons();
+            renderCurrentDocView();
+        }
+
+        // RENDER DOCUMENT CONTENT ON RIGHT PANEL
+        function renderCurrentDocView() {
+            const doc = DOCUMENTS[selectedDocIndex];
+
+            // Icon box
+            const iconBox = document.getElementById('doc-icon-box');
+            iconBox.className = `w-14 h-14 rounded-2xl bg-gradient-to-tr ${doc.color} text-white text-2xl flex items-center justify-center shadow-lg flex-shrink-0`;
+            iconBox.innerHTML = `<i class="fa-solid ${doc.icon}"></i>`;
+
+            // Text elements
+            document.getElementById('doc-number-badge').textContent = `${doc.label} of 10`;
+            document.getElementById('doc-title').textContent = doc.title;
+            document.getElementById('doc-subtitle').textContent = doc.subtitle;
+            document.getElementById('doc-status-text').textContent = doc.status;
+            document.getElementById('doc-model-name').textContent = selectedModel.name;
+            document.getElementById('doc-model-sku').textContent = selectedModel.sku;
+            document.getElementById('doc-audit-hash').textContent = doc.hash;
+
+            // Body content html
+            document.getElementById('doc-body-content').innerHTML = doc.getContent(selectedModel);
+        }
+
+        // GENERATE DPP WORKFLOW WITH ANIMATED PROGRESS BAR
+        function triggerDPPGeneration() {
+            const btn = document.getElementById('generate-dpp-btn');
+            const btnText = document.getElementById('generate-btn-text');
+            const progressContainer = document.getElementById('progress-container');
+            const progressFill = document.getElementById('progress-fill');
+            const progressPercent = document.getElementById('progress-percent');
+            const statusText = document.getElementById('progress-status-text');
+
+            // Disable button
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            btnText.textContent = 'Generating Passport...';
+
+            // Reset progress
+            progressContainer.classList.remove('hidden');
+            progressFill.style.width = '0%';
+            progressPercent.textContent = '0%';
+
+            // Steps logic
+            const steps = [
+                { percent: 25, status: 'Aggregating 10 Compliance Certificates...', stepId: 'step-1' },
+                { percent: 50, status: 'Validating Cryptographic Hashes...', stepId: 'step-2' },
+                { percent: 75, status: 'Building EU DPP Payload JSON-LD...', stepId: 'step-3' },
+                { percent: 100, status: 'Generating Standard QR Code...', stepId: 'step-4' }
+            ];
+
+            let stepIdx = 0;
+            
+            const interval = setInterval(() => {
+                if (stepIdx < steps.length) {
+                    const current = steps[stepIdx];
+                    progressFill.style.width = `${current.percent}%`;
+                    progressPercent.textContent = `${current.percent}%`;
+                    statusText.innerHTML = `<i class="fa-solid fa-arrows-spin animate-spin text-sm"></i> <span>${current.status}</span>`;
+
+                    // Highlight step indicator
+                    document.getElementById(current.stepId).classList.add('text-toy-purple', 'font-black');
+
+                    stepIdx++;
+                } else {
+                    clearInterval(interval);
+
+                    // Finished Generation
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                        btnText.textContent = 'RegenerateDPP';
+
+                        // Display Results Card
+                        revealDPPResultCard();
+                    }, 500);
+                }
+            }, 600); // 4 steps * 600ms ~ 2.4 seconds
+        }
+
+        // REVEAL RESULT CARD & RENDER QR CODE
+        
+async function revealDPPResultCard() {
+    const resultCard = document.getElementById('dpp-result-card');
+    const qrBox = document.getElementById('qrcode-box');
+
+    if (!resultCard || !qrBox) {
+        console.error('Missing QR container or result card.');
+        return;
+    }
+
+    // Make the result card visible.
+    resultCard.classList.remove('hidden');
+
+    // Check that the QR library has loaded.
+    if (typeof QRCode === 'undefined') {
+        qrBox.textContent = 'Loading QR code library...';
+
+        try {
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src =
+                    'https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js';
+
+                script.onload = resolve;
+                script.onerror = () =>
+                    reject(new Error('Both QR library sources failed.'));
+
+                document.head.appendChild(script);
+            });
+        } catch (error) {
+            console.error(error);
+            qrBox.textContent =
+                'QR library unavailable. Check your internet connection.';
+            return;
+        }
+    }
+
+    if (typeof QRCode === 'undefined') {
+        qrBox.textContent = 'QR library did not load.';
+        console.error('QRCode is undefined.');
+        return;
+    }
+
+    if (!selectedModel) {
+        qrBox.textContent = 'Please select a toy model.';
+        return;
+    }
+
+    const passportId =
+        `DPP-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+
+    // Build the passport URL relative to this page.
+    const passportUrl = new URL(
+        'passport.html',
+        window.location.href
+    );
+
+    passportUrl.searchParams.set('sku', selectedModel.sku);
+    passportUrl.searchParams.set('id', passportId);
+
+    const dppUrl = passportUrl.href;
+
+    // Update the result card.
+    document.getElementById('qr-label-name').textContent =
+        `DPP for ${selectedModel.name}`;
+
+    document.getElementById('res-model-name').textContent =
+        selectedModel.name;
+
+    document.getElementById('res-model-sku').textContent =
+        selectedModel.sku;
+
+    document.getElementById('res-passport-id').textContent =
+        passportId;
+
+    document.getElementById('dpp-link-input').value = dppUrl;
+
+    // Clear previous QR code and generate a new one.
+    qrBox.replaceChildren();
+
+    try {
+        qrCodeInstance = new QRCode(qrBox, {
+            text: dppUrl,
+            width: 160,
+            height: 160,
+            colorDark: '#8338EC',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+
+        console.log('QR code generated:', dppUrl);
+
+        resultCard.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+
+        showToast('QR code generated successfully!', 'success');
+
+    } catch (error) {
+        console.error('QR generation error:', error);
+        qrBox.textContent = 'QR generation failed. Check Console.';
+    }
+}
+
+
+        // COPY LINK TO CLIPBOARD
+        function copyDPPLink() {
+            const input = document.getElementById('dpp-link-input');
+            input.select();
+            input.setSelectionRange(0, 99999);
+
+            try {
+                document.execCommand('copy');
+                showToast('DPP Passport link copied to clipboard!', 'success');
+            } catch (err) {
+                showToast('Failed to copy text', 'warning');
+            }
+        }
+
+        // SIMULATED PDF DOWNLOAD
+        function downloadSummaryPDF() {
+            showToast(`Downloading DPP Certificate PDF for ${selectedModel.sku}...`, 'info');
+        }
+
+        // THEME SWITCHER
+        function switchTheme(theme) {
+            document.body.className = `theme-${theme} min-h-full flex flex-col justify-between relative overflow-x-hidden`;
+            showToast(`Theme switched to ${theme.toUpperCase()}`, 'info');
+        }
+
+        // TOAST NOTIFICATION SYSTEM
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let iconClass = 'fa-circle-info text-blue-500';
+            if (type === 'success') iconClass = 'fa-circle-check text-emerald-500';
+            if (type === 'warning') iconClass = 'fa-triangle-exclamation text-amber-500';
+
+            toast.className = 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-4 py-3 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-3 transition-all transform translate-x-10 opacity-0 pointer-events-auto max-w-sm';
+            
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} text-base"></i>
+                <span class="flex-1">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-x-10', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-10', 'opacity-0');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
