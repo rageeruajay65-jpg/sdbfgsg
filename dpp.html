@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trividi-Labs - Digital Product Passport (DPP)</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- QRCode.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Google Fonts: Fredoka & Quicksand -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        toy: {
+                            pink: '#FF6B8B',
+                            yellow: '#FFD166',
+                            turquoise: '#06D6A0',
+                            blue: '#118AB2',
+                            purple: '#8338EC',
+                            orange: '#FF8811',
+                            green: '#2EC4B6'
+                        }
+                    },
+                    animation: {
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'float-medium': 'float 5.5s ease-in-out infinite',
+                        'float-fast': 'float 3.5s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'bounce-subtle': 'bounceSubtle 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-18px) rotate(6deg)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 10px 25px -5px rgba(255, 107, 139, 0.25)' },
+                            '50%': { boxShadow: '0 20px 35px -5px rgba(131, 56, 236, 0.4)' },
+                        },
+                        bounceSubtle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', cursive;
+        }
+
+        /* Dynamic Toy Background Themes matching reference webpage */
+        body.theme-whimsical {
+            background: linear-gradient(135deg, #e0f7fa 0%, #fff3e0 50%, #f3e5f5 100%);
+            color: #1e293b;
+        }
+        body.theme-woodcraft {
+            background: linear-gradient(135deg, #fef3c7 0%, #ffedd5 50%, #fef9c3 100%);
+            color: #451a03;
+        }
+        body.theme-cosmic {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            color: #f8fafc;
+        }
+
+        /* Glassmorphism card elements */
+        .glass-card {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        body.theme-whimsical .card-bg,
+        body.theme-woodcraft .card-bg {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        body.theme-cosmic .card-bg {
+            background: rgba(30, 27, 75, 0.88);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: #f1f5f9;
+        }
+
+        /* Floating background items */
+        .floating-toy {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.45;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.06));
+        }
+
+        /* Certificate Watermark styling */
+        .cert-watermark {
+            background-image: radial-gradient(circle, rgba(255,107,139,0.04) 10%, transparent 10%);
+            background-size: 20px 20px;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease-out, opacity 0.25s ease-in-out, padding 0.25s;
+            opacity: 0;
+        }
+
+        .accordion-content.active {
+            max-height: 1200px;
+            opacity: 1;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .chevron-icon.rotate {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="theme-whimsical min-h-full flex flex-col justify-between relative overflow-x-hidden">
+
+    <!-- FLOATING TOY BACKGROUND DECORATIONS (FROM REFERENCE WEBPAGE) -->
+    <div id="toy-bg-decorations" class="fixed inset-0 pointer-events-none z-0">
+        <div class="floating-toy animate-float-slow top-12 left-8 text-toy-pink text-6xl">
+            <i class="fa-solid fa-cube"></i>
+        </div>
+        <div class="floating-toy animate-float-medium top-1/4 right-10 text-toy-yellow text-7xl">
+            <i class="fa-solid fa-teddy-bear"></i>
+        </div>
+        <div class="floating-toy animate-float-fast bottom-1/4 left-10 text-toy-purple text-7xl">
+            <i class="fa-solid fa-rocket"></i>
+        </div>
+        <div class="floating-toy animate-float-slow bottom-10 right-1/4 text-toy-turquoise text-6xl">
+            <i class="fa-solid fa-puzzle-piece"></i>
+        </div>
+        <div class="floating-toy animate-float-medium top-1/3 left-1/4 text-toy-orange text-5xl">
+            <i class="fa-solid fa-star"></i>
+        </div>
+        <div class="floating-toy animate-float-fast top-16 right-1/3 text-toy-blue text-5xl">
+            <i class="fa-solid fa-car-side"></i>
+        </div>
+        <div class="floating-toy animate-float-slow bottom-1/3 right-8 text-pink-400 text-6xl">
+            <i class="fa-solid fa-train"></i>
+        </div>
+    </div>
+
+    <!-- MAIN HEADER NAVIGATION BAR -->
+    <header class="relative z-20 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex items-center justify-between">
+        <!-- Brand Logo -->
+        <a href="#" class="flex items-center gap-3 group">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-toy-pink via-toy-yellow to-toy-turquoise flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-300">
+                <i class="fa-solid fa-shapes text-xl text-white"></i>
+            </div>
+            <div>
+                <span class="font-heading text-2xl font-black bg-gradient-to-r from-toy-pink via-toy-purple to-toy-blue bg-clip-text text-transparent">
+                    Trividhi-Labs
+                </span>
+                <span class="block text-[10px] font-bold tracking-widest uppercase text-toy-blue -mt-1">Digital Product Passport Portal</span>
+            </div>
+        </a>
+
+        <!-- Header Actions: Toy Selector & Theme Switcher -->
+        <div class="flex items-center gap-3">
+            <!-- Toy Model Selection Dropdown -->
+            <div class="relative">
+                <select id="headerModelSelect" onchange="changeModel(this.value)" class="px-3.5 py-2 rounded-2xl bg-white/90 dark:bg-slate-800/90 shadow-md border border-toy-purple/30 text-slate-800 dark:text-slate-100 font-bold text-xs focus:outline-none focus:ring-2 focus:ring-toy-purple backdrop-blur-md cursor-pointer appearance-none pr-8">
+                    <!-- Dynamic Options -->
+                </select>
+                <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 pointer-events-none"></i>
+            </div>
+
+            <!-- Theme Dropdown Menu -->
+            <div class="relative group">
+                <button class="px-3.5 py-2 rounded-2xl bg-white/80 dark:bg-slate-800/80 shadow-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:scale-105 transition-all flex items-center gap-2 text-xs font-bold backdrop-blur-md">
+                    <i class="fa-solid fa-palette text-toy-purple"></i>
+                    <span class="hidden sm:inline">Theme</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                </button>
+                <div class="absolute right-0 mt-2 w-48 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700 p-2 hidden group-hover:block transition-all z-50">
+                    <div class="text-[10px] font-bold px-3 py-1 text-slate-400 uppercase tracking-wider">Background Theme</div>
+                    <button onclick="switchTheme('whimsical')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold hover:bg-pink-50 dark:hover:bg-slate-700 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-pink-400"></span> Whimsical Pastel
+                    </button>
+                    <button onclick="switchTheme('woodcraft')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-amber-600"></span> Woodcraft Classic
+                    </button>
+                    <button onclick="switchTheme('cosmic')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold hover:bg-purple-950 dark:hover:bg-slate-700 flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-indigo-500"></span> Cosmic Space Toys
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8 mb-12">
+
+        <!-- HEADER HERO PANEL WITH TITLE, MODEL NAME, NUMBER & QR CODE -->
+        <div class="card-bg glass-card rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl border border-white/60 relative overflow-hidden">
+            <div class="space-y-3 text-center md:text-left flex-1 relative z-10">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-toy-pink/15 text-toy-pink border border-toy-pink/30 text-xs font-bold uppercase tracking-wider animate-bounce-subtle">
+                    <i class="fa-solid fa-certificate text-sm"></i> Official EU & Global Digital Product Passport
+                </div>
+                <h1 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight font-heading" id="headerPassTitle">
+                    Digital Product Passport (DPP) for Toys
+                </h1>
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-1">
+                    <span class="text-2xl font-black font-heading text-toy-purple" id="headerModelName">Starlight Rocket Explorer</span>
+                    <span class="px-3 py-1 rounded-xl bg-toy-blue/10 text-toy-blue border border-toy-blue/20 text-xs font-mono font-bold" id="headerModelNumber">SKU: JC-TRK-901</span>
+                    <span class="px-3 py-1 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-300 text-xs font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-check text-emerald-500"></i> CE & CPSC Verified
+                    </span>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-medium leading-relaxed max-w-3xl">
+                    Verified Digital Product Passport (DPP) containing comprehensive European Union Toy Safety Directive 2009/48/EC compliance data, material BOM chemical audits, environmental carbon ratings, and origin traceability.
+                </p>
+            </div>
+
+            <!-- QR CODE CONTAINER RIGHT SIDE -->
+            <div class="relative z-10 flex flex-col items-center justify-center p-5 rounded-2xl bg-white dark:bg-slate-800 border-2 border-toy-turquoise/30 shadow-lg min-w-[170px]">
+                <div id="qrcode" class="p-2 bg-white rounded-xl"></div>
+                <span class="text-[10px] font-mono text-slate-400 mt-2 font-bold uppercase tracking-wider">DPP IDENTIFIER QR</span>
+                <span class="text-xs font-extrabold text-toy-purple mt-0.5 font-mono" id="qrModelCode">JC-TRK-901</span>
+            </div>
+        </div>
+
+        <!-- METADATA STATS BAR -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="card-bg glass-card p-4 rounded-2xl shadow-md border border-white/60 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-toy-pink/20 text-toy-pink flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-barcode"></i>
+                </div>
+                <div>
+                    <span class="block text-[10px] uppercase font-bold text-slate-400">SKU Code</span>
+                    <span id="meta-sku" class="font-bold text-sm text-slate-800 dark:text-slate-100">JC-TRK-901</span>
+                </div>
+            </div>
+            <div class="card-bg glass-card p-4 rounded-2xl shadow-md border border-white/60 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-toy-yellow/30 text-toy-orange flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-shapes"></i>
+                </div>
+                <div>
+                    <span class="block text-[10px] uppercase font-bold text-slate-400">Toy Category</span>
+                    <span id="meta-category" class="font-bold text-sm text-slate-800 dark:text-slate-100">Aero-Space Toys</span>
+                </div>
+            </div>
+            <div class="card-bg glass-card p-4 rounded-2xl shadow-md border border-white/60 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-toy-turquoise/20 text-toy-turquoise flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-child"></i>
+                </div>
+                <div>
+                    <span class="block text-[10px] uppercase font-bold text-slate-400">Target Age</span>
+                    <span id="meta-age" class="font-bold text-sm text-slate-800 dark:text-slate-100">6+ Years</span>
+                </div>
+            </div>
+            <div class="card-bg glass-card p-4 rounded-2xl shadow-md border border-white/60 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-toy-purple/20 text-toy-purple flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-industry"></i>
+                </div>
+                <div>
+                    <span class="block text-[10px] uppercase font-bold text-slate-400">Mfg Facility</span>
+                    <span id="meta-facility" class="font-bold text-sm text-slate-800 dark:text-slate-100">Factory 01 - Nuremberg DE</span>
+                </div>
+            </div>
+        </div>
+
+        
+        <!-- MANDATORY CONSUMER INFORMATION PANEL (TABLE) -->
+       
+              
+
+        <!-- EXPANDABLE COMPLIANCE & TESTING REPORTS PANEL (ACCORDION) -->
+        <div class="card-bg glass-card rounded-3xl p-6 sm:p-8 shadow-xl border border-white/60 space-y-4">
+            <div class="pb-3 border-b border-slate-200 dark:border-slate-700/60">
+                <h2 class="text-xl font-black font-heading flex items-center gap-2">
+                    <i class="fa-solid fa-microscope text-toy-purple"></i> Detailed Compliance & Audit Reports
+                </h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Expandable accredited laboratory audits, chemical BOM screenings, and environmental certifications</p>
+            </div>
+
+            <div class="space-y-3" id="accordionContainer">
+                
+                <!-- ACCORDION ITEM 1: CE SAFETY & MECHANICAL TESTING (EN 71-1, 71-2, 71-3) -->
+                <div class="border border-slate-200 dark:border-slate-700/80 rounded-2xl overflow-hidden bg-white/60 dark:bg-slate-800/60">
+                    <button onclick="toggleAccordion('acc1')" class="w-full p-4 text-left flex items-center justify-between font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition">
+                        <span class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-toy-pink/20 text-toy-pink flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <span>CE Safety Declaration of Conformity (EN 71-1, 71-2, 71-3)</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-down chevron-icon text-slate-400" id="acc1-chevron"></i>
+                    </button>
+                    <div id="acc1" class="accordion-content px-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                        <div class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 pb-2">
+                                <span class="font-bold text-slate-700 dark:text-slate-200">Accredited Laboratory:</span>
+                                <span class="font-mono text-toy-purple font-bold">Eurofins DE Lab No. EF-994821</span>
+                            </div>
+                            <p>Full verification under European Union Toy Safety Directive 2009/48/EC. Mechanical & physical properties (EN 71-1) tested for torque, tension, drop impact, and sharp edges.</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                                <div class="p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                    <span class="block text-[10px] text-slate-400 font-bold uppercase">EN 71-1 Mechanical</span>
+                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">PASSED (Zero Fracture)</span>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                    <span class="block text-[10px] text-slate-400 font-bold uppercase">EN 71-2 Flammability</span>
+                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">PASSED (&lt;5 mm/sec)</span>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                                    <span class="block text-[10px] text-slate-400 font-bold uppercase">EN 71-3 Migration</span>
+                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">PASSED (&lt;0.001 mg/kg)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACCORDION ITEM 2: US CPSC & ASTM F963 CONSUMER PRODUCT SAFETY -->
+                <div class="border border-slate-200 dark:border-slate-700/80 rounded-2xl overflow-hidden bg-white/60 dark:bg-slate-800/60">
+                    <button onclick="toggleAccordion('acc2')" class="w-full p-4 text-left flex items-center justify-between font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition">
+                        <span class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-toy-blue/20 text-toy-blue flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-flag-usa"></i>
+                            </div>
+                            <span>ASTM F963 US Consumer Product Safety Certificate (16 CFR 1250)</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-down chevron-icon text-slate-400" id="acc2-chevron"></i>
+                    </button>
+                    <div id="acc2" class="accordion-content px-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                        <div class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                            <p>CPSC accredited third-party laboratory test results for United States commercial entry:</p>
+                            <table class="w-full text-left border-collapse my-2 text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-200 dark:border-slate-700 text-[10px] uppercase text-slate-400 font-bold">
+                                        <th class="py-1.5">Test Parameter</th>
+                                        <th class="py-1.5">Regulatory Threshold</th>
+                                        <th class="py-1.5">Audited Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 dark:divide-slate-800 font-semibold">
+                                    <tr><td class="py-2">Total Lead & Cadmium Content</td><td>&lt; 90 ppm</td><td class="text-emerald-600 dark:text-emerald-400">0.2 ppm (PASS)</td></tr>
+                                    <tr><td class="py-2">Sharp Edges & Points (16 CFR 1500)</td><td>Zero sharp points</td><td class="text-emerald-600 dark:text-emerald-400">100% PASS</td></tr>
+                                    <tr><td class="py-2">Drop Impact Endurance</td><td>5 Drops @ 3 ft</td><td class="text-emerald-600 dark:text-emerald-400">No Fracture (PASS)</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACCORDION ITEM 3: CHEMICAL & TOXICOLOGICAL MATERIAL AUDIT -->
+                <div class="border border-slate-200 dark:border-slate-700/80 rounded-2xl overflow-hidden bg-white/60 dark:bg-slate-800/60">
+                    <button onclick="toggleAccordion('acc3')" class="w-full p-4 text-left flex items-center justify-between font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition">
+                        <span class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-toy-turquoise/20 text-toy-turquoise flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-flask"></i>
+                            </div>
+                            <span>Chemical & Toxicological Material Audit (REACH Annex XVII & CPSIA)</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-down chevron-icon text-slate-400" id="acc3-chevron"></i>
+                    </button>
+                    <div id="acc3" class="accordion-content px-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                        <div class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                            <p class="font-bold text-slate-800 dark:text-slate-100">Bill of Materials (BOM) Toxicological Screening:</p>
+                            <ul class="space-y-1.5 text-xs">
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i> Phthalate-Free & BPA-Free (DEHP, DBP, BBP 0.00% content)</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i> Non-toxic water-insoluble food-grade organic pigments</li>
+                                <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-500"></i> SVHC Candidate List (235 substances) screened below detection limits</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACCORDION ITEM 4: CIRCULAR ECONOMY & CARBON FOOTPRINT (ISO 14067) -->
+                <div class="border border-slate-200 dark:border-slate-700/80 rounded-2xl overflow-hidden bg-white/60 dark:bg-slate-800/60">
+                    <button onclick="toggleAccordion('acc4')" class="w-full p-4 text-left flex items-center justify-between font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition">
+                        <span class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-leaf"></i>
+                            </div>
+                            <span>Environmental Lifecycle Carbon Footprint & Recyclability (ISO 14067)</span>
+                        </span>
+                        <i class="fa-solid fa-chevron-down chevron-icon text-slate-400" id="acc4-chevron"></i>
+                    </button>
+                    <div id="acc4" class="accordion-content px-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                        <div class="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+                                <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-200 dark:border-emerald-800">
+                                    <div class="text-2xl font-black text-emerald-700 dark:text-emerald-300" id="recycledRate">94.5%</div>
+                                    <div class="text-[10px] text-slate-500 font-bold uppercase">Circularity Score</div>
+                                </div>
+                                <div class="p-3 bg-indigo-50 dark:bg-indigo-950/40 rounded-xl border border-indigo-200 dark:border-indigo-800">
+                                    <div class="text-2xl font-black text-indigo-700 dark:text-indigo-300" id="carbonValue">0.84 kg</div>
+                                    <div class="text-[10px] text-slate-500 font-bold uppercase">CO2e Lifecycle Impact</div>
+                                </div>
+                                <div class="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800">
+                                    <div class="text-2xl font-black text-amber-700 dark:text-amber-300">100%</div>
+                                    <div class="text-[10px] text-slate-500 font-bold uppercase">Modular Disassembly</div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Zero-plastic retail packaging. Snap-fit construction allows tool-free separation of electronic and housing components for municipal recycling streams.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MANUAL MODAL WITH MULTI-LANGUAGE SUPPORT -->
+    <div id="manualModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-4 shadow-2xl relative border border-slate-200 dark:border-slate-700">
+            <button onclick="closeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-toy-purple/20 text-toy-purple flex items-center justify-center font-bold text-xl">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div>
+                    <h3 class="font-heading font-black text-xl text-slate-900 dark:text-slate-100" id="modalTitle">Operation Manual</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="modalSub">JoyCraft Official Safety & Care Guide</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 text-[10px] font-bold">
+                <span class="text-slate-400 uppercase">Languages:</span>
+                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700">🇬🇧 EN</span>
+                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700">🇩🇪 DE</span>
+                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700">🇫🇷 FR</span>
+                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700">🇪🇸 ES</span>
+                <span class="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700">🇮🇹 IT</span>
+            </div>
+
+            <div class="p-4 bg-slate-50 dark:bg-slate-900/80 rounded-2xl text-xs space-y-2 text-slate-700 dark:text-slate-300 font-mono">
+                <p><strong>Step 1:</strong> Unpack toy components and inspect for transport integrity.</p>
+                <p><strong>Step 2:</strong> Verify safety latch / battery compartment closure before first use.</p>
+                <p><strong>Step 3:</strong> Clean surface using damp cloth with mild water-based organic soap.</p>
+                <p><strong>Step 4:</strong> Scan QR code on base for firmware updates and digital passport verification.</p>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeModal()" class="px-5 py-2.5 bg-toy-purple hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-md transition-all">
+                    Close Guide
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- FOOTER -->
+    <footer class="relative z-10 py-6 border-t border-slate-200/60 dark:border-slate-800 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
+        © 2026 JoyCraft Toys Ltd. • EU Digital Product Passport (DPP) Framework Directive 2024/1781 • ISO 9001
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <script>
+        // 1. DATA: 10 REALISTIC TOY MODELS MATCHING REFERENCE WEBPAGE EXACTLY
+        const models = [
+            {
+                id: 'JC-TRK-901',
+                name: 'Starlight Rocket Explorer',
+                sku: 'JC-TRK-901',
+                category: 'Aero-Space Toys',
+                age: '6+ Years',
+                facility: 'Factory 01 - Nuremberg DE',
+                origin: 'Germany (JoyCraft HQ)',
+                ceMark: 'CE / EN 71 Directive / CPSC ASTM F963',
+                toxicColor: 'Phthalate-Free & BPA-Free Non-Toxic Eco-Polymer',
+                safety: 'Choking warning for small parts. Recommended for children 6 years and older.',
+                recycled: '94.5% Circular',
+                carbon: '0.84 kg CO2e',
+                color: '#8338EC',
+                icon: 'rocket'
+            },
+            {
+                id: 'JC-PLY-402',
+                name: 'Teddy Care Plush Bear',
+                sku: 'JC-PLY-402',
+                category: 'Soft Plush & Fabrics',
+                age: '0+ Months',
+                facility: 'Factory 03 - Lyon FR',
+                origin: 'France (JoyCraft Textile Lab)',
+                ceMark: 'CE / OEKO-TEX Standard 100 / EN 71',
+                toxicColor: '100% GOTS Certified Organic Natural Dyes',
+                safety: 'Hypoallergenic organic cotton. Washable at 30°C. Safe for infants 0+ months.',
+                recycled: '98% Recycled Organic Fibers',
+                carbon: '0.45 kg CO2e',
+                color: '#FF6B8B',
+                icon: 'paw'
+            },
+            {
+                id: 'JC-RCC-108',
+                name: 'Cyber Racer RC Speedster',
+                sku: 'JC-RCC-108',
+                category: 'Electronics & RC',
+                age: '8+ Years',
+                facility: 'Factory 02 - Hsinchu TW',
+                origin: 'Taiwan (JoyCraft Electronics)',
+                ceMark: 'CE / RED Directive / FCC / RoHS 3',
+                toxicColor: 'Lead-Free Solder & Non-Toxic ABS Housing',
+                safety: 'Rechargeable Li-Ion battery (USB-C 5V). Avoid water immersion.',
+                recycled: '78% Recycled ABS & Carbon',
+                carbon: '1.65 kg CO2e',
+                color: '#118AB2',
+                icon: 'car'
+            },
+            {
+                id: 'JC-WOD-305',
+                name: 'Wooden Wonder Sorting Blocks',
+                sku: 'JC-WOD-305',
+                category: 'Wooden Educational',
+                age: '1+ Years',
+                facility: 'Factory 04 - Black Forest DE',
+                origin: 'Germany (Black Forest FSC)',
+                ceMark: 'CE / FSC Certified / EN 71-1',
+                toxicColor: 'Natural Organic Beeswax Finish & Water-based Stains',
+                safety: 'Smooth rounded anti-splinter edges. Tested for small parts cylinder compliance.',
+                recycled: '100% FSC Certified Wood',
+                carbon: '0.32 kg CO2e',
+                color: '#FF8811',
+                icon: 'cube'
+            },
+            {
+                id: 'JC-BLD-712',
+                name: 'MagnaTile Architecture Set',
+                sku: 'JC-BLD-712',
+                category: 'Construction Blocks',
+                age: '5+ Years',
+                facility: 'Factory 01 - Nuremberg DE',
+                origin: 'Germany (JoyCraft HQ)',
+                ceMark: 'CE / UKCA / ASTM F963',
+                toxicColor: 'Ultrasonically Encapsulated Food-Grade Polycarbonate',
+                safety: 'Reinforced internal magnet rivets. Do not expose to extreme heat above 70°C.',
+                recycled: '88% Recycled Polycarbonate',
+                carbon: '0.92 kg CO2e',
+                color: '#FFD166',
+                icon: 'cubes'
+            },
+            {
+                id: 'JC-ROB-500',
+                name: 'RoboBuddy AI Companion',
+                sku: 'JC-ROB-500',
+                category: 'Interactive Robotics',
+                age: '7+ Years',
+                facility: 'Factory 02 - Hsinchu TW',
+                origin: 'Taiwan (JoyCraft Electronics)',
+                ceMark: 'CE / EN 62115 / RoHS / FCC',
+                toxicColor: 'BPA-Free Non-Toxic Tech Polymers',
+                safety: 'Low-voltage charging. Child-safe software privacy sandbox.',
+                recycled: '72% Recycled Polymers',
+                carbon: '1.95 kg CO2e',
+                color: '#06D6A0',
+                icon: 'robot'
+            },
+            {
+                id: 'JC-TRN-204',
+                name: 'EcoTrain Wooden Express',
+                sku: 'JC-TRN-204',
+                category: 'Wooden Rail Sets',
+                age: '2+ Years',
+                facility: 'Factory 04 - Black Forest DE',
+                origin: 'Germany (Black Forest FSC)',
+                ceMark: 'CE / FSC Certified / EN 71',
+                toxicColor: 'Non-Toxic Organic Plant Inks & Soy Coatings',
+                safety: 'Magnetic couplings enclosed in high-impact wooden caps.',
+                recycled: '100% FSC Beechwood',
+                carbon: '0.41 kg CO2e',
+                color: '#2EC4B6',
+                icon: 'train'
+            },
+            {
+                id: 'JC-SCI-611',
+                name: 'DinoDig Excavation Kit',
+                sku: 'JC-SCI-611',
+                category: 'STEM & Science',
+                age: '8+ Years',
+                facility: 'Factory 05 - Krakow PL',
+                origin: 'Poland (JoyCraft Science Lab)',
+                ceMark: 'CE / UKCA / EN 71-3',
+                toxicColor: 'Natural Dust-Free Bio-Gypsum & Mineral Pigments',
+                safety: 'Safety goggles provided in kit. Adult supervision recommended.',
+                recycled: '90% Eco Gypsum & Bio-resin',
+                carbon: '0.58 kg CO2e',
+                color: '#10B981',
+                icon: 'flask'
+            },
+            {
+                id: 'JC-CSL-880',
+                name: 'Princess Crystal Castle',
+                sku: 'JC-CSL-880',
+                category: 'Playsets & Figures',
+                age: '4+ Years',
+                facility: 'Factory 01 - Nuremberg DE',
+                origin: 'Germany (JoyCraft HQ)',
+                ceMark: 'CE / ASTM F963 / EN 71',
+                toxicColor: 'Heavy-Metal Free Translucent Eco-Resin',
+                safety: 'Snap-lock assembly. Small figurine accessories included.',
+                recycled: '85% Bio-based Acrylic',
+                carbon: '1.10 kg CO2e',
+                color: '#EC4899',
+                icon: 'chess-castle'
+            },
+            {
+                id: 'JC-MUS-045',
+                name: 'Symphony Xylophone & Drum',
+                sku: 'JC-MUS-045',
+                category: 'Musical Toys',
+                age: '3+ Years',
+                facility: 'Factory 03 - Lyon FR',
+                origin: 'France (JoyCraft Acoustic)',
+                ceMark: 'CE / FSC Certified / EN 71',
+                toxicColor: 'Water-based Acoustic Coatings & Lead-Free Metal Bars',
+                safety: 'Tuned acoustic output limited to safe pediatric decibel levels (<80dB).',
+                recycled: '95% FSC Wood & Non-toxic Alloy',
+                carbon: '0.50 kg CO2e',
+                color: '#8338EC',
+                icon: 'music'
+            }
+        ];
+
+        const viewAngles = ["Front View", "Left Profile", "Rear View", "Right Profile", "Top-Down View"];
+        let currentModelIdx = 0;
+        let currentAngleIdx = 0;
+        let qrCodeObj = null;
+
+        // INITIALIZE ON PAGE LOAD
+        window.addEventListener('DOMContentLoaded', () => {
+            populateHeaderSelect();
+            initQRCode();
+            renderModelData(0);
+            renderThumbnails();
+        });
+
+        // POPULATE HEADER SELECT MENU
+        function populateHeaderSelect() {
+            const selectEl = document.getElementById('headerModelSelect');
+            selectEl.innerHTML = '';
+
+            models.forEach((m, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = `${idx + 1}. ${m.name} (${m.sku})`;
+                if (idx === 0) opt.selected = true;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        // INITIALIZE QR CODE GENERATOR
+        function initQRCode() {
+            const qrElem = document.getElementById("qrcode");
+            qrElem.innerHTML = "";
+            qrCodeObj = new QRCode(qrElem, {
+                text: "https://dpp.joycraft-toys.com/v1/passport?model=" + models[0].sku,
+                width: 120,
+                height: 120,
+                colorDark: "#8338EC",
+                colorLight: "#FFFFFF",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        // CHANGE SELECTED MODEL
+        function changeModel(idx) {
+            currentModelIdx = parseInt(idx);
+            currentAngleIdx = 0;
+            renderModelData(currentModelIdx);
+            showToast(`Loaded DPP: ${models[currentModelIdx].name}`, 'info');
+        }
+
+        // RENDER MODEL DATA ACROSS ALL PANELS
+        function renderModelData(idx) {
+            const m = models[idx];
+            
+            // Header & Meta Updates
+            document.getElementById("headerModelName").innerText = m.name;
+            document.getElementById("headerModelNumber").innerText = "SKU: " + m.sku;
+            document.getElementById("qrModelCode").innerText = m.sku;
+
+            document.getElementById("meta-sku").innerText = m.sku;
+            document.getElementById("meta-category").innerText = m.category;
+            document.getElementById("meta-age").innerText = m.age;
+            document.getElementById("meta-facility").innerText = m.facility;
+
+            // Update QR Code
+            if (qrCodeObj) {
+                qrCodeObj.clear();
+                qrCodeObj.makeCode("https://dpp.joycraft-toys.com/v1/passport?model=" + m.sku);
+            }
+
+            // Mandatory Consumer Table Updates
+            const tableBody = document.getElementById("mandatoryTableBody");
+            tableBody.innerHTML = `
+                <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition">
+                    <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">Toy Model Name</td>
+                    <td class="py-3 px-4 font-bold text-toy-purple font-heading text-sm">${m.name}</td>
+                    <td class="py-3 px-4 text-right"><span class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Verified</span></td>
+                </tr>
+                <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition">
+                    <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">Model SKU / Product ID</td>
+                    <td class="py-3 px-4 font-mono font-bold text-slate-700 dark:text-slate-200">${m.sku}</td>
+                    <td class="py-3 px-4 text-right"><span class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-[10px] font-mono font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">Unique ID</span></td>
+                </tr>
+                <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition">
+                    <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">CE & Global Compliance Markings</td>
+                    <td class="py-3 px-4"><span class="font-bold text-emerald-600 dark:text-emerald-400">${m.ceMark}</span></td>
+                    <td class="py-3 px-4 text-right"><span class="px-2.5 py-1 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold border border-emerald-300">Passed</span></td>
+                </tr>
+                <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition">
+                    <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">Target Recommended Age</td>
+                    <td class="py-3 px-4 font-bold text-slate-900 dark:text-slate-100">${m.age}</td>
+                    <td class="py-3 px-4 text-right"><span class="px-2.5 py-1 rounded-xl bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 text-[10px] font-bold border border-blue-300">Audited</span></td>
+                </tr>
+                <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition">
+                    <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">Digital Instruction & Care Manual</td>
+                    <td class="py-3 px-4">
+                        <button onclick="openModal()" class="inline-flex items-center gap-1.5 text-toy-purple hover:text-purple-700 font-bold underline cursor-pointer">
+                            <i class="fa-solid fa-file-pdf text-red-500"></i> View Multi-Language User Manual
+                        </button>
+                    </td>
+                    <td class="py-3 px-4 text-right"><span class="px-2.5 py-1 rounded-xl bg-toy-purple/10 text-toy-purple text-[10px] font-bold border border-toy-purple/20">Official Guide</span></td>
+                </tr>
+                <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition">
+                    <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">Chemical & Coating Material Audit</td>
+                    <td class="py-3 px-4 text-slate-700 dark:text-slate-300">${m.toxicColor}</td>
+                    <td class="py-3 px-4 text-right"><span class="px-2.5 py-1 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold border border-emerald-300">0% Non-Toxic</span></td>
+                </tr>
+                <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition">
+                    <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">Safety Instructions & Warnings</td>
+                    <td class="py-3 px-4 text-slate-600 dark:text-slate-300 text-xs leading-relaxed">${m.safety}</td>
+                    <td class="py-3 px-4 text-right"><span class="px-2.5 py-1 rounded-xl bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 text-[10px] font-bold border border-amber-300">Compliant</span></td>
+                </tr>
+                <tr class="hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition">
+                    <td class="py-3 px-4 font-bold text-slate-800 dark:text-slate-200">Manufacturer & Origin Provenance</td>
+                    <td class="py-3 px-4 text-slate-700 dark:text-slate-300">${m.origin} (${m.facility})</td>
+                    <td class="py-3 px-4 text-right"><span class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">100% Traceable</span></td>
+                </tr>
+            `;
+
+            // Accordion dynamic metric updates
+            document.getElementById("recycledRate").innerText = m.recycled;
+            document.getElementById("carbonValue").innerText = m.carbon;
+
+            drawToyCanvas();
+            updateViewBadge();
+        }
+
+        function renderThumbnails() {
+            const bar = document.getElementById("thumbnailBar");
+            bar.innerHTML = "";
+            viewAngles.forEach((angle, idx) => {
+                const btn = document.createElement("button");
+                btn.onclick = () => selectAngle(idx);
+                btn.id = "thumb-" + idx;
+                btn.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                    idx === currentAngleIdx 
+                        ? 'bg-toy-purple text-white border-toy-purple shadow-md' 
+                        : 'bg-white/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700'
+                }`;
+                btn.innerText = angle;
+                bar.appendChild(btn);
+            });
+        }
+
+        function selectAngle(idx) {
+            currentAngleIdx = idx;
+            updateThumbnails();
+            updateViewBadge();
+            drawToyCanvas();
+        }
+
+        function nextImage() {
+            currentAngleIdx = (currentAngleIdx + 1) % 5;
+            updateThumbnails();
+            updateViewBadge();
+            drawToyCanvas();
+        }
+
+        function prevImage() {
+            currentAngleIdx = (currentAngleIdx - 1 + 5) % 5;
+            updateThumbnails();
+            updateViewBadge();
+            drawToyCanvas();
+        }
+
+        function updateThumbnails() {
+            viewAngles.forEach((_, idx) => {
+                const btn = document.getElementById("thumb-" + idx);
+                if (btn) {
+                    if (idx === currentAngleIdx) {
+                        btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border bg-toy-purple text-white border-toy-purple shadow-md";
+                    } else {
+                        btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border bg-white/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700";
+                    }
+                }
+            });
+        }
+
+        function updateViewBadge() {
+            document.getElementById("viewBadge").innerText = `${viewAngles[currentAngleIdx]} (${currentAngleIdx + 1} / 5)`;
+        }
+
+        // DRAW SYNTHETIC CANVAS IMAGE ACCORDING TO VIEW ANGLE & MODEL
+        function drawToyCanvas() {
+            const canvas = document.getElementById("toyCanvas");
+            const ctx = canvas.getContext("2d");
+            const m = models[currentModelIdx];
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Background subtle grid
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 20) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 20) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+
+            // View Angle Adjustments
+            let scaleX = 1;
+            let scaleY = 1;
+            let angleOffset = 0;
+
+            if (currentAngleIdx === 1) { // Left Profile
+                scaleX = 0.7; angleOffset = -15;
+            } else if (currentAngleIdx === 2) { // Rear View
+                scaleX = -1;
+            } else if (currentAngleIdx === 3) { // Right Profile
+                scaleX = 0.7; angleOffset = 15;
+            } else if (currentAngleIdx === 4) { // Top-Down View
+                scaleY = 0.6;
+            }
+
+            ctx.rotate((angleOffset * Math.PI) / 180);
+            ctx.scale(scaleX, scaleY);
+
+            // Ground Shadow
+            ctx.beginPath();
+            ctx.ellipse(0, 75, 85, 22, 0, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+            ctx.fill();
+
+            // Main Toy Body Styling
+            ctx.fillStyle = m.color;
+            ctx.strokeStyle = "#FFFFFF";
+            ctx.lineWidth = 3;
+
+            // Render Distinct Synthetic Geometry per Toy Model
+            if (m.icon === 'rocket') {
+                ctx.beginPath(); ctx.moveTo(0, -110);
+                ctx.quadraticCurveTo(45, -30, 35, 60);
+                ctx.lineTo(-35, 60);
+                ctx.quadraticCurveTo(-45, -30, 0, -110);
+                ctx.fill(); ctx.stroke();
+                // Porthole
+                ctx.fillStyle = "#38BDF8";
+                ctx.beginPath(); ctx.arc(0, -30, 16, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            } else if (m.icon === 'paw') { // Teddy Plush Bear
+                // Body
+                ctx.beginPath(); ctx.arc(0, 15, 55, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                // Head
+                ctx.beginPath(); ctx.arc(0, -45, 40, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                // Ears
+                ctx.beginPath(); ctx.arc(-35, -75, 18, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(35, -75, 18, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                // Snout & Eyes
+                ctx.fillStyle = "#FFFFFF";
+                ctx.beginPath(); ctx.arc(0, -38, 14, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#1E293B";
+                ctx.beginPath(); ctx.arc(-14, -52, 5, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(14, -52, 5, 0, Math.PI * 2); ctx.fill();
+            } else if (m.icon === 'car') { // RC Speedster
+                ctx.beginPath(); ctx.roundRect(-80, -20, 160, 48, 18); ctx.fill(); ctx.stroke();
+                // Cabin
+                ctx.fillStyle = "#38BDF8";
+                ctx.beginPath(); ctx.roundRect(-40, -52, 80, 35, 12); ctx.fill(); ctx.stroke();
+                // Wheels
+                ctx.fillStyle = "#1E293B";
+                ctx.beginPath(); ctx.arc(-55, 28, 20, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.arc(55, 28, 20, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            } else if (m.icon === 'robot') { // RoboBuddy
+                ctx.beginPath(); ctx.roundRect(-45, -55, 90, 105, 14); ctx.fill(); ctx.stroke();
+                // Head
+                ctx.fillStyle = "#F1F5F9";
+                ctx.beginPath(); ctx.roundRect(-30, -105, 60, 42, 10); ctx.fill(); ctx.stroke();
+                // Visor & Eyes
+                ctx.fillStyle = "#06D6A0";
+                ctx.beginPath(); ctx.arc(-12, -86, 7, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(12, -86, 7, 0, Math.PI * 2); ctx.fill();
+            } else if (m.icon === 'train') { // EcoTrain
+                ctx.beginPath(); ctx.roundRect(-70, -35, 110, 65, 10); ctx.fill(); ctx.stroke();
+                // Cabin Back
+                ctx.fillStyle = "#FF8811";
+                ctx.beginPath(); ctx.roundRect(10, -70, 45, 80, 8); ctx.fill(); ctx.stroke();
+                // Chimney
+                ctx.fillStyle = "#1E293B";
+                ctx.beginPath(); ctx.rect(-50, -60, 15, 25); ctx.fill(); ctx.stroke();
+            } else { // Blocks / Castle / Xylophone / Science / MagnaTile
+                ctx.beginPath(); ctx.roundRect(-55, -55, 110, 110, 18); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#FFFFFF";
+                ctx.font = "bold 15px Fredoka";
+                ctx.textAlign = "center";
+                ctx.fillText(m.name.split(" ")[0], 0, 5);
+            }
+
+            ctx.restore();
+
+            // Blueprint Overlay Text
+            ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
+            ctx.font = "bold 10px monospace";
+            ctx.fillText(`VIEW ANGLE: ${viewAngles[currentAngleIdx].toUpperCase()}`, 15, canvas.height - 15);
+            ctx.fillText(`SKU: ${m.sku}`, canvas.width - 110, canvas.height - 15);
+        }
+
+        // ACCORDION TOGGLE HANDLER
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const chevron = document.getElementById(id + "-chevron");
+            const isOpen = content.classList.contains("active");
+
+            // Close all
+            document.querySelectorAll(".accordion-content").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".chevron-icon").forEach(el => el.classList.remove("rotate"));
+
+            if (!isOpen) {
+                content.classList.add("active");
+                chevron.classList.add("rotate");
+            }
+        }
+
+        // MODAL HANDLERS
+        function openModal() {
+            const m = models[currentModelIdx];
+            document.getElementById("modalTitle").innerText = m.name + " Manual";
+            document.getElementById("modalSub").innerText = "Official Operating & Safety Guide (" + m.sku + ")";
+            document.getElementById("manualModal").classList.remove("hidden");
+        }
+
+        function closeModal() {
+            document.getElementById("manualModal").classList.add("hidden");
+        }
+
+        // THEME SWITCHER HANDLER (MATCHING REFERENCE WEBPAGE)
+        function switchTheme(theme) {
+            document.body.className = `theme-${theme} min-h-full flex flex-col justify-between relative overflow-x-hidden`;
+            showToast(`Theme switched to ${theme.toUpperCase()}`, 'info');
+        }
+
+        // TOAST NOTIFICATIONS SYSTEM
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let iconClass = 'fa-circle-info text-blue-500';
+            if (type === 'success') iconClass = 'fa-circle-check text-emerald-500';
+            if (type === 'warning') iconClass = 'fa-triangle-exclamation text-amber-500';
+
+            toast.className = 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-4 py-3 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-3 transition-all transform translate-x-10 opacity-0 pointer-events-auto max-w-sm';
+            
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} text-base"></i>
+                <span class="flex-1">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-x-10', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-10', 'opacity-0');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

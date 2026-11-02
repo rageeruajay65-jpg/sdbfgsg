@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JoyCraft Toys - Digital Product Passport Generator</title>
+    <title>Trividhi </title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -206,10 +206,13 @@
                 </div>
             </div>
 
-            <a href="#" class="px-3.5 py-2 rounded-2xl bg-toy-purple text-white shadow-md hover:bg-purple-700 hover:scale-105 transition-all text-xs font-bold flex items-center gap-2">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                <span class="hidden sm:inline">Portal Login</span>
-            </a>
+            <button
+    type="button"
+    onclick="window.location.href='login.html'"
+    class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-toy-pink to-toy-purple text-white font-bold text-sm shadow-lg hover:scale-105 transition-all">
+    <i class="fa-solid fa-right-to-bracket mr-2"></i>
+    Portal Login
+</button>   
         </div>
     </header>
 
@@ -315,12 +318,12 @@
 
                 <!-- Navigation Controls -->
                 <!-- Left Button -->
-                <button onclick="navigateToyGallery(-1)" type="button" class="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-2xl bg-white/85 dark:bg-slate-800/85 hover:bg-toy-purple hover:text-white text-slate-700 dark:text-slate-200 shadow-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-10 backdrop-blur-md" title="Previous Image">
+                <button id="gallery-prev-button" onclick="navigateToyGallery(-1)" type="button" class="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-2xl bg-white/85 dark:bg-slate-800/85 hover:bg-toy-purple hover:text-white text-slate-700 dark:text-slate-200 shadow-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-10 backdrop-blur-md" title="Previous Image">
                     <i class="fa-solid fa-chevron-left text-lg"></i>
                 </button>
 
                 <!-- Right Button -->
-                <button onclick="navigateToyGallery(1)" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-2xl bg-white/85 dark:bg-slate-800/85 hover:bg-toy-purple hover:text-white text-slate-700 dark:text-slate-200 shadow-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-10 backdrop-blur-md" title="Next Image">
+                <button id="gallery-next-button" onclick="navigateToyGallery(1)" type="button" class="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-2xl bg-white/85 dark:bg-slate-800/85 hover:bg-toy-purple hover:text-white text-slate-700 dark:text-slate-200 shadow-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center transition-all hover:scale-110 active:scale-95 z-10 backdrop-blur-md" title="Next Image">
                     <i class="fa-solid fa-chevron-right text-lg"></i>
                 </button>
             </div>
@@ -584,6 +587,19 @@
 
     <!-- INTERACTIVE JAVASCRIPT LOGIC -->
     <script>
+        // LOCAL PRODUCT IMAGE DIRECTORY
+        const TOY_IMAGE_ROOT =
+            "/static/images/Toy_DPP_POC_resources";
+
+        // CREATE LOCAL IMAGE GALLERY
+        function localToyImages(folder, files) {
+            return files.map(([file, title]) => ({
+                url: `${TOY_IMAGE_ROOT}/${encodeURIComponent(folder)}/${encodeURIComponent(file)}`,
+                title: title,
+                subtitle: `${title} of the product`
+            }));
+        }
+
         // 1. DATA: 10 REALISTIC TOY MODELS WITH IMAGE GALLERIES
         const TOY_MODELS = [
             { 
@@ -593,11 +609,13 @@
                 category: 'Road-based-toys', 
                 age: '6+ Years', 
                 facility: 'Factory 01 - Nuremberg DE',
-                images: [
-                    { url: 'https://media.istockphoto.com/id/183545763/photo/neon-anatomy-of-an-automobile-on-black-background.jpg?s=2048x2048&w=is&k=20&c=CeAIv50QcW8KenrG9GPiGaaT41rQAPLPyd2sdoPDCtI=', title: 'Cyber-car - Front Angle', subtitle: 'Primary composite shell with non-toxic outer finish' },
-                    { url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1000&q=80', title: 'Thruster & Base Assembly', subtitle: 'Impact testing certified ignition mechanism casing' },
-                    { url: 'https://media.istockphoto.com/id/173655507/photo/car-blueprint-wireframe-with-clipping-path.jpg?s=612x612&w=0&k=20&c=1kXDxkgkKfmzURNKAlPnxT5mZKe3UolQj2aV7ouj1NQ=', title: 'Packaging & User Guide', subtitle: '100% Recyclable soy-ink cardboard box presentation' }
-                ]
+                images: localToyImages("1_StarLite_Rocket_Explorer", [
+                    ["front.png", "Front View"],
+                    ["right.png", "Right View"],
+                    ["back.png", "Back View"],
+                    ["left.png", "Left View"],
+                    ["top.png", "Top View"]
+                ])
             },
             { 
                 id: 'JC-PLY-402', 
@@ -606,11 +624,7 @@
                 category: 'Soft Plush & Fabrics', 
                 age: '0+ Months', 
                 facility: 'Factory 03 - Lyon FR',
-                images: [
-                    { url: 'https://thumbs.dreamstime.com/b/eco-friendly-plastic-free-toys-toddler-stylish-wooden-toy-train-colorful-blocs-child-ai-generated-modern-tactile-270929445.jpg', title: 'Plush Bear Front View', subtitle: '100% Organic hypoallergenic cotton filling' },
-                    { url: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=1000&q=80', title: 'Seam Integrity Inspection', subtitle: 'Double-stitched safety seams certified under EN 71-1' },
-                    { url: 'https://thumbs.dreamstime.com/b/eco-friendly-plastic-free-toys-toddler-stylish-wooden-toy-train-child-ai-generated-modern-tactile-colorful-270929268.jpg?w=992', title: 'Safety Tag & Certification', subtitle: 'Soft touch anti-choke embroidered label' }
-                ]
+                images: []
             },
             { 
                 id: 'JC-RCC-108', 
@@ -619,11 +633,13 @@
                 category: 'Electronics & RC', 
                 age: '8+ Years', 
                 facility: 'Factory 02 - Hsinchu TW',
-                images: [
-                    { url: 'https://static0.carbuzzimages.com/wordpress/wp-content/uploads/2024/03/947418-7.jpg', title: 'RC Speedster Body', subtitle: 'RoHS 3 compliant ABS polymer aerodynamic shell' },
-                    { url: 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=1000&q=80', title: 'Dual-Motor Chassis', subtitle: 'Over-voltage battery enclosure with safety cutoff' },
-                    { url: 'https://static1.topspeedimages.com/wordpress/wp-content/uploads/2023/09/2024-lexus-lc.jpg', title: '2.4GHz Wireless Controller', subtitle: 'Ergonomic non-slip grips for safe handling' }
-                ]
+                images: localToyImages("Cyber_Race_RC_Speedster_5_Views_PNG", [
+                    ["Cyber_Race_RC_Speedster_Front_View.png", "Front View"],
+                    ["Cyber_Race_RC_Speedster_Right_View.png", "Right View"],
+                    ["Cyber_Race_RC_Speedster_Back_View.png", "Back View"],
+                    ["Cyber_Race_RC_Speedster_Left_View.png", "Left View"],
+                    ["Cyber_Race_RC_Speedster_Top_View.png", "Top View"]
+                ])
             },
             { 
                 id: 'JC-WOD-305', 
@@ -632,11 +648,13 @@
                 category: 'Wool Educational', 
                 age: '1+ Years', 
                 facility: 'Factory 04 - Black Forest DE',
-                images: [
-                    { url: 'https://i5.walmartimages.com/seo/LotFancy-12-in-Brown-Teddy-Bear-Stuffed-Animal-Plush-Toy_a066898a-c4a6-4019-a3c8-1e13f2c9dc39.f9d13303c3d99fa4ab6a31262cf1a07f.jpeg', title: 'Sorting Blocks Set', subtitle: '100% Sustainable FSC-certified solid beech wood' },
-                    { url: 'https://wallpapers.com/images/hd/teddy-bear-pictures-dwlgjzs7ay3xgahw.jpg', title: 'Water-Based Stains', subtitle: 'Non-toxic organic dye application detail' },
-                    { url: 'https://laz-img-sg.alicdn.com/p/38686a49d2e2916f6f54b68e86c745cc.jpg', title: 'Rounded Safety Edges', subtitle: 'Zero sharp points cylinder test passed' }
-                ]
+                images: localToyImages("Teddy_Care_5_Product_Views_PNG", [
+                    ["Teddy_Care_Front_View.png", "Front View"],
+                    ["Teddy_Care_Right_View.png", "Right View"],
+                    ["Teddy_Care_Back_View.png", "Back View"],
+                    ["Teddy_Care_Left_View.png", "Left View"],
+                    ["Teddy_Care_Top_View.png", "Top View"]
+                ])
             },
             { 
                 id: 'JC-BLD-712', 
@@ -645,11 +663,13 @@
                 category: 'Construction Blocks', 
                 age: '5+ Years', 
                 facility: 'Factory 01 - Nuremberg DE',
-                images: [
-                    { url: 'https://i5.walmartimages.com/seo/Disney-Princess-Cinderella-Small-Doll-Plush-with-Tag_ea2d4c1e-19f1-432d-a8e4-ed18a37ea899.f614169465f955e2d95f7c5e4613945f.png', title: 'Architectural Tiles Assembly', subtitle: 'Ultrasonically riveted magnetic core edges' },
-                    { url: 'https://m.media-amazon.com/images/I/81H19UpSJTL._AC_SL1500_.jpg', title: 'Transparent Colors View', subtitle: 'BPA-free high-clarity grade acrylics' },
-                    { url: 'https://tse4.mm.bing.net/th/id/OIP.DU3RMALGYWQJxStdVJykvgHaGY?r=0&pid=Api&h=220&P=0', title: 'Full Construction Kit', subtitle: 'Includes 100 modular geometric tiles' }
-                ]
+                images: localToyImages("MagnaTile Architecture_set", [
+                    ["ChatGPT Image Oct 25, 2026, 11_12_25 PM-1.png", "Product View 1"],
+                    ["ChatGPT Image Oct 25, 2026, 11_12_26 PM-2.png", "Product View 2"],
+                    ["ChatGPT Image Oct 25, 2026, 11_12_28 PM-3.png", "Product View 3"],
+                    ["ChatGPT Image Oct 25, 2026, 11_12_28 PM-4.png", "Product View 4"],
+                    ["ChatGPT Image Oct 25, 2026, 11_12_30 PM-5.png", "Product View 5"]
+                ])
             },
             { 
                 id: 'JC-ROB-500', 
@@ -658,11 +678,14 @@
                 category: 'Interactive Robotics', 
                 age: '7+ Years', 
                 facility: 'Factory 02 - Hsinchu TW',
-                images: [
-                    { url: 'https://i.pinimg.com/originals/f4/de/51/f4de51d7b7ae7628250e7432a55204e6.jpg', title: 'RoboBuddy Unit', subtitle: 'Voice-interactive robotic assistant with LED face panel' },
-                    { url: 'https://images.unsplash.com/photo-1535378917042-10a22c95931a?auto=format&fit=crop&w=1000&q=80', title: 'Sensor & Camera Module', subtitle: 'EU GDPR compliant privacy-by-design optical sensors' },
-                    { url: 'https://images.unsplash.com/photo-1563206767-5b18f218e8de?auto=format&fit=crop&w=1000&q=80', title: 'Charging Dock & Battery', subtitle: 'EN 62115 short-circuit safety guarded base' }
-                ]
+                images: localToyImages("RoboBuddy", [
+                    ["front.png", "Front View"],
+                    ["right.png", "Right View"],
+                    ["back.png", "Back View"],
+                    ["left.png", "Left View"],
+                    ["top.png", "Top View"],
+                    ["left1.png", "Additional Detail View"]
+                ])
             },
             { 
                 id: 'JC-TRN-204', 
@@ -671,11 +694,13 @@
                 category: 'Wooden Rail Sets', 
                 age: '2+ Years', 
                 facility: 'Factory 04 - Black Forest DE',
-                images: [
-                    { url: 'https://images.unsplash.com/photo-1472457897821-70d3819a0e24?auto=format&fit=crop&w=1000&q=80', title: 'Wooden Express Engine', subtitle: 'FSC-certified maple wood with magnetic couplings' },
-                    { url: 'https://images.unsplash.com/photo-1531685250784-7569952593d2?auto=format&fit=crop&w=1000&q=80', title: 'Interlocking Track Sections', subtitle: 'Precision milled track connectors' },
-                    { url: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=1000&q=80', title: 'Complete Playset Overview', subtitle: 'Includes 3 wagons, bridge, and signal posts' }
-                ]
+                images: localToyImages("ecotrain_wooden_exp", [
+                    ["front.png", "Front View"],
+                    ["right.png", "Right View"],
+                    ["back.png", "Back View"],
+                    ["left.png", "Left View"],
+                    ["top.png", "Top View"]
+                ])
             },
             { 
                 id: 'JC-SCI-611', 
@@ -684,11 +709,13 @@
                 category: 'STEM & Science', 
                 age: '8+ Years', 
                 facility: 'Factory 05 - Krakow PL',
-                images: [
-                    { url: 'https://images.unsplash.com/photo-1530210124550-912dc1381cb8?auto=format&fit=crop&w=1000&q=80', title: 'Excavation Block & Tools', subtitle: 'Dust-free non-toxic plaster matrix with safety goggles' },
-                    { url: 'https://images.unsplash.com/photo-1507668077129-56e32842fceb?auto=format&fit=crop&w=1000&q=80', title: 'Replica Fossil Specimen', subtitle: 'High precision resin molded dinosaur skeleton' },
-                    { url: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1000&q=80', title: 'STEM Field Activity Guide', subtitle: 'Multi-language paleontology learning booklet' }
-                ]
+                images: localToyImages("DinoDig_Excavation_Kit_5_Views_PNG", [
+                    ["DinoDig_Excavation_Kit_Front_View.png", "Front View"],
+                    ["DinoDig_Excavation_Kit_Right_View.png", "Right View"],
+                    ["DinoDig_Excavation_Kit_Back_View.png", "Back View"],
+                    ["DinoDig_Excavation_Kit_Left_View.png", "Left View"],
+                    ["DinoDig_Excavation_Kit_Top_View.png", "Top View"]
+                ])
             },
             { 
                 id: 'JC-CSL-880', 
@@ -697,11 +724,13 @@
                 category: 'Playsets & Figures', 
                 age: '4+ Years', 
                 facility: 'Factory 01 - Nuremberg DE',
-                images: [
-                    { url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1000&q=80', title: 'Crystal Castle Facade', subtitle: 'Shatter-proof resin turrets with integrated LED lights' },
-                    { url: 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=1000&q=80', title: 'Interior Furniture & Figures', subtitle: 'Small parts cylinder safety verified figures' },
-                    { url: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1000&q=80', title: 'Illuminated Night View', subtitle: 'Low voltage battery powered ambient lighting' }
-                ]
+                images: localToyImages("Princess_Crystal_Castle_5_Views_PNG", [
+                    ["Princess_Crystal_Castle_Front_View.png", "Front View"],
+                    ["Princess_Crystal_Castle_Right_View.png", "Right View"],
+                    ["Princess_Crystal_Castle_Back_View.png", "Back View"],
+                    ["Princess_Crystal_Castle_Left_View.png", "Left View"],
+                    ["Princess_Crystal_Castle_Top_View.png", "Top View"]
+                ])
             },
             { 
                 id: 'JC-MUS-045', 
@@ -710,11 +739,13 @@
                 category: 'Musical Toys', 
                 age: '3+ Years', 
                 facility: 'Factory 03 - Lyon FR',
-                images: [
-                    { url: 'https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?auto=format&fit=crop&w=1000&q=80', title: 'Symphony Xylophone View', subtitle: 'Acoustically tuned metal keys with non-lead paint coating' },
-                    { url: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1000&q=80', title: 'Soft Rubber Mallets', subtitle: 'Child-safe flexible handles to prevent injuries' },
-                    { url: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?auto=format&fit=crop&w=1000&q=80', title: 'Integrated Storage Base', subtitle: 'Solid beech wood frame with built-in mallet slots' }
-                ]
+                images: localToyImages("Symphony_Xylophone_and_Drum_5_Views_PNG", [
+                    ["Symphony_Xylophone_and_Drum_Front_View.png", "Front View"],
+                    ["Symphony_Xylophone_and_Drum_Right_View.png", "Right View"],
+                    ["Symphony_Xylophone_and_Drum_Back_View.png", "Back View"],
+                    ["Symphony_Xylophone_and_Drum_Left_View.png", "Left View"],
+                    ["Symphony_Xylophone_and_Drum_Top_View.png", "Top View"]
+                ])
             }
         ];
 
@@ -997,32 +1028,51 @@
 
         // UPDATE TOY GALLERY SHOWCASE PANEL
         function updateToyGalleryUI() {
-            if (!selectedModel.images || selectedModel.images.length === 0) return;
+            const imgEl = document.getElementById('toy-carousel-img');
+            const titleEl = document.getElementById('toy-img-title');
+            const subtitleEl = document.getElementById('toy-img-subtitle');
+            const counterEl = document.getElementById('gallery-counter');
+            const dotsContainer = document.getElementById('gallery-dots');
+            const prevButton = document.getElementById('gallery-prev-button');
+            const nextButton = document.getElementById('gallery-next-button');
+            const images = selectedModel.images || [];
 
-            const total = selectedModel.images.length;
+            if (images.length === 0) {
+                imgEl.removeAttribute('src');
+                imgEl.classList.add('hidden');
+                titleEl.textContent = 'Product Photos Coming Soon';
+                subtitleEl.textContent = `Photos have not been added for ${selectedModel.name}.`;
+                counterEl.textContent = '0 Images';
+                dotsContainer.innerHTML = '';
+                prevButton.classList.add('hidden');
+                nextButton.classList.add('hidden');
+                return;
+            }
+
+            imgEl.classList.remove('hidden');
+            prevButton.classList.remove('hidden');
+            nextButton.classList.remove('hidden');
+
+            const total = images.length;
             if (currentImageIndex >= total) currentImageIndex = 0;
             if (currentImageIndex < 0) currentImageIndex = total - 1;
 
-            const imgData = selectedModel.images[currentImageIndex];
-
-            const imgEl = document.getElementById('toy-carousel-img');
+            const imgData = images[currentImageIndex];
             imgEl.src = imgData.url;
             imgEl.alt = imgData.title;
 
-            document.getElementById('toy-img-title').textContent = imgData.title;
-            document.getElementById('toy-img-subtitle').textContent = imgData.subtitle;
-            document.getElementById('gallery-counter').textContent = `Image ${currentImageIndex + 1} of ${total}`;
+            titleEl.textContent = imgData.title;
+            subtitleEl.textContent = imgData.subtitle;
+            counterEl.textContent = `Image ${currentImageIndex + 1} of ${total}`;
 
-            // Render Dot Indicators
-            const dotsContainer = document.getElementById('gallery-dots');
             dotsContainer.innerHTML = '';
             for (let i = 0; i < total; i++) {
                 const dot = document.createElement('button');
                 dot.type = 'button';
                 dot.onclick = () => setGalleryImage(i);
                 dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${
-                    i === currentImageIndex 
-                    ? 'bg-toy-purple w-6' 
+                    i === currentImageIndex
+                    ? 'bg-toy-purple w-6'
                     : 'bg-slate-300 dark:bg-slate-700 hover:bg-toy-pink'
                 }`;
                 dotsContainer.appendChild(dot);
@@ -1031,12 +1081,20 @@
 
         // NAVIGATE TOY GALLERY (LEFT / RIGHT)
         function navigateToyGallery(direction) {
+            if (!selectedModel.images || selectedModel.images.length === 0) {
+                return;
+            }
+
             currentImageIndex += direction;
             updateToyGalleryUI();
         }
 
         // SET SPECIFIC GALLERY IMAGE
         function setGalleryImage(index) {
+            if (!selectedModel.images || selectedModel.images.length === 0) {
+                return;
+            }
+
             currentImageIndex = index;
             updateToyGalleryUI();
         }

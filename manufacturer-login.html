@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trividhi Labs - Manufacturer & Importer</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif'],
+                    },
+                    colors: {
+                        toy: {
+                            pink: '#FF6B8B',
+                            yellow: '#FFD166',
+                            turquoise: '#06D6A0',
+                            blue: '#118AB2',
+                            purple: '#8338EC',
+                            orange: '#FF8811'
+                        }
+                    },
+                    animation: {
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'float-medium': 'float 5s ease-in-out infinite',
+                        'float-fast': 'float 3.5s ease-in-out infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'pulse-glow': 'pulseGlow 2.5s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-18px) rotate(6deg)' },
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(6px, 0, 0)' }
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 10px 25px -5px rgba(255, 107, 139, 0.3)' },
+                            '50%': { boxShadow: '0 20px 35px -5px rgba(131, 56, 236, 0.45)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            transition: background 0.5s ease;
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Fredoka', cursive;
+        }
+
+        /* Dynamic Toy Themes */
+        body.theme-whimsical {
+            background: linear-gradient(135deg, #e0f7fa 0%, #fff3e0 50%, #f3e5f5 100%);
+            color: #1e293b;
+        }
+        body.theme-woodcraft {
+            background: linear-gradient(135deg, #fef3c7 0%, #ffedd5 50%, #fef9c3 100%);
+            color: #451a03;
+        }
+        body.theme-cosmic {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            color: #f8fafc;
+        }
+
+        /* Glassmorphism styling */
+        .glass-card {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* Dynamic Theme Card Backgrounds */
+        body.theme-whimsical .card-bg,
+        body.theme-woodcraft .card-bg {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        body.theme-cosmic .card-bg {
+            background: rgba(30, 27, 75, 0.85);
+            border: 1px solid rgba(168, 85, 247, 0.25);
+            color: #f1f5f9;
+        }
+
+        /* Custom Checkbox */
+        .custom-checkbox input:checked ~ .checkmark {
+            background-color: #FF6B8B;
+            border-color: #FF6B8B;
+        }
+        .custom-checkbox input:checked ~ .checkmark:after {
+            display: block;
+        }
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2.5px 2.5px 0;
+            transform: rotate(45deg);
+        }
+
+        /* Floating background elements */
+        .floating-toy {
+            position: absolute;
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.55;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.06));
+        }
+    </style>
+</head>
+<body class="theme-whimsical h-full flex flex-col justify-between relative overflow-x-hidden">
+
+    <!-- FLOATING TOY BACKGROUND ELEMENTS -->
+    <div id="toy-bg-decorations" class="fixed inset-0 pointer-events-none z-0">
+        <!-- Floating Wooden Cube -->
+        <div class="floating-toy animate-float-slow top-10 left-10 text-toy-pink text-6xl">
+            <i class="fa-solid fa-cube"></i>
+        </div>
+        <!-- Floating Teddy Bear -->
+        <div class="floating-toy animate-float-medium top-1/4 right-12 text-toy-yellow text-7xl">
+            <i class="fa-solid fa-teddy-bear"></i>
+        </div>
+        <!-- Floating Toy Rocket -->
+        <div class="floating-toy animate-float-fast bottom-1/4 left-12 text-toy-purple text-7xl">
+            <i class="fa-solid fa-rocket"></i>
+        </div>
+        <!-- Floating Puzzle Piece -->
+        <div class="floating-toy animate-float-slow bottom-12 right-1/4 text-toy-turquoise text-6xl">
+            <i class="fa-solid fa-puzzle-piece"></i>
+        </div>
+        <!-- Floating Magic Star -->
+        <div class="floating-toy animate-float-medium top-1/3 left-1/4 text-toy-orange text-5xl">
+            <i class="fa-solid fa-star"></i>
+        </div>
+        <!-- Floating Toy Car -->
+        <div class="floating-toy animate-float-fast top-16 right-1/3 text-toy-blue text-5xl">
+            <i class="fa-solid fa-car-side"></i>
+        </div>
+        <!-- Floating Train Engine -->
+        <div class="floating-toy animate-float-slow bottom-1/3 right-12 text-pink-400 text-6xl">
+            <i class="fa-solid fa-train"></i>
+        </div>
+    </div>
+
+    <!-- TOP HEADER CONTROL BAR -->
+    <header class="relative z-20 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+        <!-- Brand Logo -->
+        <a href="#" class="flex items-center gap-3 group">
+            <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-toy-pink via-toy-yellow to-toy-turquoise flex items-center justify-center shadow-md group-hover:rotate-12 transition-transform duration-300">
+                <i class="fa-solid fa-shapes text-xl text-white"></i>
+            </div>
+            <div>
+                <span class="font-heading text-2xl font-black bg-gradient-to-r from-toy-pink via-toy-purple to-toy-blue bg-clip-text text-transparent">
+                    Trividhi Labs
+                </span>
+                <span class="block text-[10px] font-bold tracking-widest uppercase text-toy-blue -mt-1">Manufacturer Portal</span>
+            </div>
+        </a>
+
+        <!-- Theme Switcher Menu -->
+        <div class="relative group">
+            <button class="px-3.5 py-2 rounded-xl bg-white/80 dark:bg-slate-800/80 shadow-sm border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:scale-105 transition-all flex items-center gap-2 text-xs font-bold backdrop-blur-md">
+                <i class="fa-solid fa-palette text-toy-purple"></i>
+                <span class="hidden sm:inline">Theme</span>
+                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+            </button>
+            <div class="absolute right-0 mt-2 w-48 rounded-2xl bg-white dark:bg-slate-800 shadow-xl border border-slate-100 dark:border-slate-700 p-2 hidden group-hover:block transition-all z-50">
+                <div class="text-[10px] font-bold px-3 py-1 text-slate-400 uppercase tracking-wider">Background Theme</div>
+                <button onclick="switchTheme('whimsical')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold hover:bg-pink-50 dark:hover:bg-slate-700 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-pink-400"></span> Whimsical Pastel
+                </button>
+                <button onclick="switchTheme('woodcraft')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold hover:bg-amber-50 dark:hover:bg-slate-700 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-amber-600"></span> Woodcraft Classic
+                </button>
+                <button onclick="switchTheme('cosmic')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold hover:bg-purple-950 dark:hover:bg-slate-700 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-indigo-500"></span> Cosmic Space Toys
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="relative z-10 my-auto py-8 px-4 sm:px-6 flex items-center justify-center">
+        
+        <!-- LOGIN CARD CONTAINER -->
+        <div id="auth-card" class="card-bg glass-card max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl transition-all duration-300 relative animate-pulse-glow">
+            
+            <!-- VIEW 1: LOGIN FORM VIEW -->
+            <div id="login-view-content" class="space-y-6">
+                
+                <!-- Card Header -->
+                <div class="text-center space-y-2">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-toy-pink to-toy-purple text-white text-3xl flex items-center justify-center mx-auto shadow-lg shadow-toy-pink/30 hover:rotate-6 transition-transform">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-black">Welcome Manufacturer!</h1>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
+                        Sign in to access your Trividhi Labs portal account
+                    </p>
+                </div>
+                    
+                   <!-- Manufacturer and Importer Quick Access Boxes -->
+                        <div class="bg-slate-100/70 p-3 rounded-2xl border border-slate-200/60 space-y-2">
+                                <div class="grid grid-cols-2 gap-2">
+
+                        <!-- Manufacturer Box -->
+                            <button onclick="selectRole('manufacturer')" type="button"
+                            class="p-3 rounded-xl bg-white hover:bg-pink-50 text-left border border-slate-200 transition-all">
+                            <div class="text-xs font-bold">🏭 Manufacturer</div>
+                            <div class="text-[10px] text-slate-400">Manufacturer Account</div>
+                            </button>
+
+                        <!-- Importer Box -->
+                            <button onclick="selectRole('importer')" type="button"
+                            class="p-3 rounded-xl bg-white hover:bg-amber-50 text-left border border-slate-200 transition-all">
+                            <div class="text-xs font-bold">📦 Importer</div>
+                           <div class="text-[10px] text-slate-400">Importer Account</div>
+                           </button>
+
+                           </div>
+                           </div>
+
+                
+
+                <!-- Feedback Banner for Validation Errors -->
+                <div id="error-feedback" class="hidden p-3 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-bold flex items-center gap-2 animate-bounce-soft">
+                    <i class="fa-solid fa-circle-exclamation text-base text-red-500"></i>
+                    <span id="error-feedback-text">Invalid username or password!</span>
+                </div>
+
+                <!-- Login Form -->
+                <form id="login-form"
+                      action="/open-dashboard"
+                      method="POST"
+                      class="space-y-4">
+                    
+                    <!-- Username Input Field -->
+                    <div class="space-y-1.5">
+                        <label for="username" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            Username / Account ID
+                        </label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="text" id="username" name="username" required
+                            placeholder="Enter your username"
+                            autocomplete="username"
+                            class="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-toy-pink focus:border-transparent transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Password Input Field with Show/Hide Toggle -->
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <label for="password" class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                Password
+                            </label>
+                            <button type="button" onclick="openForgotModal()" class="text-xs font-bold text-toy-pink hover:text-pink-600 hover:underline transition-colors">
+                                Forgot password?
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="password" id="password" name="password" required
+                            placeholder="••••••••"
+                            autocomplete="current-password"
+                            class="w-full pl-11 pr-11 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-toy-pink focus:border-transparent transition-all">
+                            
+                            <!-- Toggle Password Eye Icon Button -->
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-1/2 -translate-y-1/2 p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors" title="Toggle password visibility">
+                                <i class="fa-solid fa-eye" id="password-toggle-icon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me Checkbox & Role Selector -->
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="custom-checkbox relative flex items-center cursor-pointer select-none gap-2 text-xs font-bold text-slate-600 dark:text-slate-300">
+                            <input type="checkbox" id="remember-me" name="remember_me" class="sr-only">
+                            <span class="checkmark w-4 h-4 rounded-md border border-slate-300 dark:border-slate-600 relative transition-colors"></span>
+                            <span>Remember Me</span>
+                        </label>
+
+                        <select id="user-role" name="role"
+                        class="text-xs font-bold bg-transparent text-slate-500 border-none focus:outline-none cursor-pointer">
+                            <option value="manufacturer">Manufacturer</option>
+                            <option value="importer">Importer</option>
+                        </select>
+                    </div>
+ 
+                    <!-- Submit Button with Simulated Loading State -->
+                    <button type="submit" id="submit-btn" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-toy-pink to-toy-purple text-white font-heading font-bold text-base shadow-lg shadow-toy-pink/30 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                        <span id="btn-text">Sign In To Account</span>
+                        <i id="btn-spinner" class="fa-solid fa-circle-notch animate-spin hidden text-lg"></i>
+                    </button>
+
+                </form>
+
+                <!-- Footer Sign Up Prompt -->
+                <div class="text-center pt-2 border-t border-slate-200/60 dark:border-slate-700/60 text-xs font-semibold text-slate-500">
+                    Don't have a Trividhi Labs account yet? 
+                    <button onclick="showSignUpToast()" class="text-toy-purple hover:underline font-bold ml-1">Create Account</button>
+                </div>
+
+            </div>
+
+            <!-- VIEW 2: SUCCESSFUL AUTHENTICATION DASHBOARD PREVIEW -->
+            <div id="success-view-content" class="hidden space-y-6 text-center">
+                <div class="w-20 h-20 rounded-full bg-emerald-100 text-emerald-500 text-4xl flex items-center justify-center mx-auto shadow-inner animate-bounce-soft">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+
+                <div class="space-y-1">
+                    <span class="px-3 py-1 rounded-full bg-toy-turquoise/20 text-teal-800 dark:text-teal-200 font-bold text-[11px] uppercase tracking-wider">
+                        Authenticated Successfully
+                    </span>
+                    <h2 class="text-2xl font-black" id="welcome-user-name">Welcome Back, User!</h2>
+                    <p class="text-xs text-slate-400" id="user-role-badge">JoyCraft Portal Tier: Parent</p>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/80 text-left space-y-3 text-xs">
+                    <div class="flex justify-between items-center pb-2 border-b border-slate-200 dark:border-slate-700">
+                        <span class="text-slate-400 font-semibold">Active Session:</span>
+                        <span class="font-mono font-bold text-emerald-500 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> Live Token
+                        </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400 font-semibold">Remember Session:</span>
+                        <span class="font-bold text-slate-700 dark:text-slate-200" id="remember-status">Enabled</span>
+                    </div>
+                </div>
+
+                <button onclick="logout()" class="w-full py-3 rounded-2xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm shadow-md hover:scale-[1.01] transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Sign Out & Return to Login</span>
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FORGOT PASSWORD MODAL -->
+    <div id="forgot-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="card-bg glass-card max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl relative space-y-5 animate-pulse-glow" id="forgot-modal-card">
+            
+            <!-- Close Button -->
+            <button onclick="closeForgotModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Modal Header -->
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 rounded-2xl bg-toy-yellow/20 text-toy-orange text-2xl flex items-center justify-center mx-auto">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <h3 class="text-2xl font-black">Reset Password</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                    Enter your registered email address or username and we will send you a verification recovery code.
+                </p>
+            </div>
+
+            <!-- Forgot Password Form -->
+            <form onsubmit="handleForgotSubmit(event)" class="space-y-4">
+                <div class="space-y-1">
+                    <label for="reset-email" class="block text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Account Email / Username
+                    </label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="email" id="reset-email" required placeholder="name@example.com" class="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-toy-pink">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3 rounded-2xl bg-toy-pink hover:bg-pink-600 text-white font-bold text-sm shadow-md hover:scale-[1.02] transition-all">
+                    Send Reset Link
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- FOOTER COPYRIGHT -->
+    <footer class="relative z-10 py-4 text-center text-xs font-semibold text-slate-500 dark:text-slate-400">
+        © 2026 Trividhi Labs pvt. Ltd. All Rights Reserved. 
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT LOGIC -->
+    <script>
+        // DEMO USER ACCOUNTS
+        const DEMO_ACCOUNTS = {
+            parent: { user: 'happy_parent', pass: 'toylover123', name: 'Sarah Jenkins', role: 'Parent Tier' },
+            retailer: { user: 'retail_partner', pass: 'wholesale2026', name: 'Boutique Toys Emporium', role: 'B2B Wholesale Partner' },
+            admin: { user: 'joy_admin', pass: 'adminpass2026', name: 'HQ Operations Team', role: 'Factory Administrator' }
+        };
+
+        // THEME SWITCHER LOGIC
+        function switchTheme(theme) {
+            document.body.className = `theme-${theme} h-full flex flex-col justify-between relative overflow-x-hidden`;
+            showToast(`Background theme changed to ${theme.toUpperCase()}`, 'info');
+        }
+
+        function selectRole(role) {
+            document.getElementById('user-role').value = role;
+        }
+
+        // AUTO-FILL DEMO CREDENTIALS
+        function fillDemo(roleKey) {
+            const acc = DEMO_ACCOUNTS[roleKey];
+            if (acc) {
+                document.getElementById('username').value = acc.user;
+                document.getElementById('password').value = acc.pass;
+                document.getElementById('user-role').value = roleKey;
+                hideError();
+                showToast(`Filled demo credentials for ${acc.role}`, 'info');
+            }
+        }
+
+        // TOGGLE PASSWORD VISIBILITY
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('password');
+            const icon = document.getElementById('password-toggle-icon');
+
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                passInput.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        // LOGIN AUTHENTICATION HANDLER
+        function handleLogin(e) {
+            e.preventDefault();
+            hideError();
+            const username = document.getElementById('username').value.trim();
+             const password = document.getElementById('password').value.trim();
+            const rememberMe = document.getElementById('remember-me').checked;
+            const roleKey = document.getElementById('user-role').value;
+
+            const btnSpinner = document.getElementById('btn-spinner');
+            const btnText = document.getElementById('btn-text');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (!username || !password) {
+                triggerError('Please enter both username and password.');
+                return;
+            }
+
+            btnSpinner.classList.remove('hidden');
+            btnText.textContent = 'Authenticating...';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                btnSpinner.classList.add('hidden');
+                btnText.textContent = 'Sign In To Account';
+                submitBtn.disabled = false;
+
+                const roleName = roleKey === 'manufacturer'
+                    ? 'Manufacturer'
+                    : 'Importer';
+                showToast(`${roleName} login successful! Welcome to Trividhi Labs.`, 'success');
+
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 700);
+
+            }, 800);
+        }
+
+        // LOGOUT LOGIC
+        function logout() {
+            document.getElementById('success-view-content').classList.add('hidden');
+            document.getElementById('login-view-content').classList.remove('hidden');
+            document.getElementById('password').value = '';
+            showToast('Signed out of JoyCraft Portal.', 'info');
+        }
+
+        // ERROR HANDLING
+        function triggerError(msg) {
+            const errorBanner = document.getElementById('error-feedback');
+            const errorText = document.getElementById('error-feedback-text');
+            const card = document.getElementById('auth-card');
+
+            errorText.textContent = msg;
+            errorBanner.classList.remove('hidden');
+
+            // Trigger shake animation
+            card.classList.remove('animate-shake');
+            void card.offsetWidth; // trigger reflow
+            card.classList.add('animate-shake');
+        }
+
+        function hideError() {
+            document.getElementById('error-feedback').classList.add('hidden');
+        }
+
+        // FORGOT PASSWORD MODAL LOGIC
+        function openForgotModal() {
+            document.getElementById('forgot-modal').classList.remove('hidden');
+        }
+
+        function closeForgotModal() {
+            document.getElementById('forgot-modal').classList.add('hidden');
+        }
+
+        function handleForgotSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('reset-email').value;
+            closeForgotModal();
+            showToast(`Password reset link successfully sent to ${email}`, 'success');
+            document.getElementById('reset-email').value = '';
+        }
+
+        function showSignUpToast() {
+            showToast('Registration is currently open for manufacturer and importers! Please contact support.', 'info');
+        }
+
+        // TOAST NOTIFICATION SYSTEM
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let iconClass = 'fa-circle-info text-blue-500';
+            if (type === 'success') iconClass = 'fa-circle-check text-emerald-500';
+            if (type === 'warning') iconClass = 'fa-triangle-exclamation text-amber-500';
+
+            toast.className = 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-4 py-3 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 text-xs font-bold flex items-center gap-3 transition-all transform translate-x-10 opacity-0 pointer-events-auto max-w-sm';
+            
+            toast.innerHTML = `
+                <i class="fa-solid ${iconClass} text-base"></i>
+                <span class="flex-1">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-x-10', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-10', 'opacity-0');
+                setTimeout(() => { toast.remove(); }, 300);
+            }, 3200);
+        }
+    </script>
+</body>
+</html>
