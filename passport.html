@@ -56,14 +56,40 @@
     <h2>
       {{ product.name if product else "Product not found" }}
     </h2>
-    {% if product and product.image %}
-<div style="text-align: center; margin: 20px 0;">
-    <img
-        src="{{ url_for('static', filename=product.image) }}"
-        alt="{{ product.name }}"
-        style="width: 100%; max-width: 400px; height: 300px; object-fit: contain;"
-    >
+    {% if product and product.images %}
+<div style="margin: 25px 0;">
+    <h3 style="color: #8338ec; margin-bottom: 15px;">
+        Product Images
+    </h3>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+        {% for image in product.images %}
+        <div style="
+            background: #f8f7fc;
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+        ">
+            <img
+                src="{{ image.url }}"
+                alt="{{ product.name }} - {{ image.title }}"
+                style="
+                    width: 100%;
+                    height: 160px;
+                    object-fit: contain;
+                    background: white;
+                    border-radius: 8px;
+                "
+            >
+            <p style="font-weight: bold; margin-top: 8px;">
+                {{ image.title }}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
 </div>
+{% elif product %}
+<p class="field">Product images yet to be uploaded.</p>
 {% endif %}
 
     

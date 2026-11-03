@@ -1,5 +1,5 @@
 from pathlib import Path
-from flask import Flask, render_template, redirect, url_for, request
+from flask import Flask, render_template, redirect, url_for, request, jsonify
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -7,6 +7,8 @@ app = Flask(
     __name__,
     template_folder=str(BASE_DIR),
 )
+
+PUBLISHED_PASSPORTS = {}
 
 PRODUCTS = {
     "JC-TRK-901": {
@@ -91,6 +93,49 @@ PRODUCTS = {
     },
 }
 
+DASHBOARD_PRODUCT_DETAILS = {
+    "JC-TRK-901": {
+        "name": "Starlight Rocket Explorer",
+        "category": "Road-based-toys",
+    },
+    "JC-PLY-402": {
+        "name": "Teddy Care Plus Bear",
+        "category": "Soft Plush & Fabrics",
+    },
+    "JC-RCC-108": {
+        "name": "Cyber Race RC Speedster",
+        "category": "Electronics & RC",
+    },
+    "JC-WOD-305": {
+        "name": "Wooden Wonder Sorting Blocks",
+        "category": "Wool Educational",
+    },
+    "JC-BLD-712": {
+        "name": "MagnaTile Architure",
+        "category": "Construction Blocks",
+    },
+    "JC-ROB-500": {
+        "name": "RoboBuddy AI Companion",
+        "category": "Interactive Robotics",
+    },
+    "JC-TRN-204": {
+        "name": "EcoTrain Wooden Express",
+        "category": "Wooden Rail Sets",
+    },
+    "JC-SCI-611": {
+        "name": "DinoDig Excavation Kit",
+        "category": "STEM & Science",
+    },
+    "JC-CSL-880": {
+        "name": "Princess Crystal Castle",
+        "category": "Playsets & Figures",
+    },
+    "JC-MUS-045": {
+        "name": "Symphony Xylophone & Drum",
+        "category": "Musical Toys",
+    },
+}
+
 PRODUCT_CONTEXT = {
     "JC-TRK-901": {
         "age": "6+ Years",
@@ -134,25 +179,68 @@ PRODUCT_CONTEXT = {
     },
 }
 
+# Manufacturer Login Page
 @app.route("/")
 def home():
     return render_template("manufacturer-login.html")
 
+
+# Open Manufacturer Dashboard
 @app.route("/open-dashboard", methods=["POST"])
 def open_dashboard():
     return redirect(url_for("dashboard"))
 
+
+# Manufacturer Dashboard
 @app.route("/index.html")
 def dashboard():
     return render_template("index.html")
 
 
-# Product Passport page
+# Register passport images for the current Flask process.
+@app.route("/register-passport", methods=["POST"])
+def register_passport():
+    data = request.get_json(silent=True) or {}
+    sku = str(data.get("sku", "")).strip()
+    passport_id = str(data.get("passport_id", "")).strip()
+    images = data.get("images", [])
+
+    if sku not in PRODUCTS:
+        return jsonify({"error": "Invalid product SKU"}), 400
+    if not passport_id:
+        return jsonify({"error": "Passport ID is required"}), 400
+    if not isinstance(images, list):
+        return jsonify({"error": "Invalid image data"}), 400
+
+    PUBLISHED_PASSPORTS[passport_id] = {
+        "sku": sku,
+        "images": images,
+    }
+    return jsonify({"success": True})
+
+
+# Product Passport Page
 @app.route("/passport.html")
 def product_passport():
     sku = request.args.get("sku", "").strip()
     passport_id = request.args.get("id", "").strip()
+
     product = PRODUCTS.get(sku)
+
+    if product:
+        passport_record = PUBLISHED_PASSPORTS.get(passport_id)
+        images = []
+        if passport_record and passport_record["sku"] == sku:
+            images = passport_record["images"]
+
+        product = {
+            **product,
+            **DASHBOARD_PRODUCT_DETAILS.get(sku, {}),
+            **PRODUCT_CONTEXT.get(sku, {}),
+            "sku": sku,
+            "images": images,
+        }
+
     return render_template(
         "passport.html",
         product=product,
@@ -166,13 +254,17 @@ def product_passport():
 def viewer_login():
     sku = request.args.get("sku", "").strip()
     passport_id = request.args.get("id", "").strip()
+
     product = PRODUCTS.get(sku)
+
     if product:
         product = {
             **product,
+            **DASHBOARD_PRODUCT_DETAILS.get(sku, {}),
             **PRODUCT_CONTEXT.get(sku, {}),
             "sku": sku,
         }
+
     return render_template(
         "login.html",
         sku=sku,
@@ -181,5 +273,10 @@ def viewer_login():
     )
 
 
+# Start Flask Application
 if __name__ == "__main__":
-    app.run(host="10.0.3.88", port=5000, debug=True)
+    app.run(
+        host="10.0.3.88",
+        port=5000,
+        debug=True
+    )
