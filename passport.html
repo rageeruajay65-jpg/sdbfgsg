@@ -54,7 +54,7 @@
     <h1>Trividhi Labs</h1>
 
     <h2>
-      {{ product.name ifproduct else "Product not found" }}
+      {{ product.name if product else "Product not found" }}
     </h2>
     {% if product and product.image %}
 <div style="text-align: center; margin: 20px 0;">
