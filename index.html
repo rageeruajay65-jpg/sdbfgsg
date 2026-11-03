@@ -604,40 +604,39 @@
         const TOY_MODELS = [
             { 
                 id: 'JC-TRK-901', 
-                name: 'Cyber-car', 
+                name: 'Starlight Rocket Explorer', 
                 sku: 'JC-TRK-901', 
                 category: 'Road-based-toys', 
                 age: '6+ Years', 
                 facility: 'Factory 01 - Nuremberg DE',
-                images: [
-                    {
-            url: "https://tse2.mm.bing.net/th/id/OIP.iU4VALhFIKYXgVwLxuLK9QHaE3?r=0&pid=Api&h=220&P=0",
-            title: "cyber-car",
-            subtitle: "cyber-car-image"
-        }
-                
-                ]
+                images: localToyImages("1_StarLite_Rocket_Explorer", [
+    ["front.png", "Front View"],
+    ["right.png", "Right View"],
+    ["back.png", "Back View"],
+    ["left.png", "Left View"],
+    ["top.png", "Top View"]
+])
             },
             { 
                 id: 'JC-PLY-402', 
-                name: 'Rocket', 
+                name: 'Teddy Care Plus Bear', 
                 sku: 'JC-PLY-402', 
                 category: 'Soft Plush & Fabrics', 
                 age: '0+ Months', 
                 facility: 'Factory 03 - Lyon FR',
-                images: [
-                    {
-            url: "https://tse2.mm.bing.net/th/id/OIP.Q9xfeSnV7E8Yocl6w58ePQHaHa?r=0&pid=Api&h=220&P=0",
-            title: "Rocket",
-            subtitle: "Rocket"
-        }
-                ]
+                images: localToyImages("Teddy_Care_5_Product_Views_PNG", [
+    ["Teddy_Care_Front_View.png", "Front View"],
+    ["Teddy_Care_Right_View.png", "Right View"],
+    ["Teddy_Care_Back_View.png", "Back View"],
+    ["Teddy_Care_Left_View.png", "Left View"],
+    ["Teddy_Care_Top_View.png", "Top View"]
+])
                 
             },
                 
             { 
                 id: 'JC-RCC-108', 
-                name: 'Luxury-Cars', 
+                name: 'Cyber Race RC Speedster', 
                 sku: 'JC-RCC-108', 
                 category: 'Electronics & RC', 
                 age: '8+ Years', 
@@ -652,34 +651,22 @@
             },
             { 
                 id: 'JC-WOD-305', 
-                name: 'Teddy-Bear', 
+                name: 'Wooden Wonder Sorting Blocks', 
                 sku: 'JC-WOD-305', 
                 category: 'Wool Educational', 
                 age: '1+ Years', 
                 facility: 'Factory 04 - Black Forest DE',
-                images: localToyImages("Teddy_Care_5_Product_Views_PNG", [
-                    ["Teddy_Care_Front_View.png", "Front View"],
-                    ["Teddy_Care_Right_View.png", "Right View"],
-                    ["Teddy_Care_Back_View.png", "Back View"],
-                    ["Teddy_Care_Left_View.png", "Left View"],
-                    ["Teddy_Care_Top_View.png", "Top View"]
-                ])
+                
             },
             { 
                 id: 'JC-BLD-712', 
-                name: ' Princess Cinderella', 
+                name: 'MagnaTile Architure', 
                 sku: 'JC-BLD-712', 
                 category: 'Construction Blocks', 
                 age: '5+ Years', 
                 facility: 'Factory 01 - Nuremberg DE',
-                images: [
-                     {
-            url: "https://png.pngtree.com/png-clipart/20250607/original/pngtree-chibi-style-cinderella-png-image_21133797.png",
-            title: "Princess Cinderella",
-            subtitle: "Princess Cinderella toy"
-        }
-        
-                ]
+                
+      
             },
             { 
                 id: 'JC-ROB-500', 
@@ -764,7 +751,8 @@
             {
                 id: 1,
                 label: "CE Safety Cert",
-                badge: "Click",
+                
+                badge: "",
                 title: "CE Safety Declaration of Conformity",
                 subtitle: "European Toy Safety Directive 2009/48/EC (EN 71-1, 71-2, 71-3)",
                 icon: "fa-shield-halved",
@@ -793,7 +781,7 @@
             {
                 id: 2,
                 label: "ASTM F963 Report",
-                badge: "Click",
+                badge: "",
                 title: "ASTM F963 US Consumer Product Safety Cert",
                 subtitle: "CPSC Standard Specification for Toy Safety (16 CFR 1250)",
                 icon: "fa-flag-usa",
@@ -821,7 +809,7 @@
             {
                 id: 3,
                 label: "Chemical BOM",
-                badge: "Click",
+                badge: "",
                 title: "Chemical & Toxicological Material Audit",
                 subtitle: "REACH Annex XVII & CPSIA Phthalate Content Verification",
                 icon: "fa-flask",
@@ -840,7 +828,7 @@
             {
                 id: 4,
                 label: "Carbon Footprint",
-                badge: "Click",
+                badge: "",
                 title: "Environmental Lifecycle Assessment (LCA)",
                 subtitle: "ISO 14067 Carbon Footprint & Recyclability Rating",
                 icon: "fa-leaf",
@@ -864,7 +852,7 @@
             {
                 id: 5,
                 label: "Supply Traceability",
-                badge: "Click",
+                badge: "",
                 title: "Supply Chain & Material Origin Traceability",
                 subtitle: "Tier 1 to Tier 3 Ethical Supplier Provenance Log",
                 icon: "fa-diagram-project",
@@ -888,7 +876,7 @@
             {
                 id: 6,
                 label: "Age Risk Audit",
-                badge: "Click",
+                badge: "",
                 title: "Age Appropriateness & Choking Hazard Audit",
                 subtitle: "CPSC 16 CFR 1501 Small Parts Cylinder Test",
                 icon: "fa-child-reaching",
@@ -908,7 +896,7 @@
             {
                 id: 7,
                 label: "RoHS/Battery Cert",
-                badge: "Click",
+                badge: "",
                 title: "RoHS 3 & Electric Toy Safety Certificate",
                 subtitle: "Directive 2011/65/EU & EN 62115 Safety Standards",
                 icon: "fa-bolt",
@@ -926,7 +914,7 @@
             {
                 id: 8,
                 label: "User Manual",
-                badge: "Click",
+                badge: "",
                 title: "User Safety & Product Care Instruction Manual",
                 subtitle: "Multi-language Consumer Operating Guide",
                 icon: "fa-book-open-reader",
@@ -950,7 +938,7 @@
             {
                 id: 9,
                 label: "Sustainable Packaging",
-                badge: "Click",
+                badge: "",
                 title: "Sustainable Packaging & Recyclability Attestation",
                 subtitle: "PPWR Packaging and Packaging Waste Regulation Standard",
                 icon: "fa-box-tissue",
@@ -968,7 +956,7 @@
             {
                 id: 10,
                 label: "Warranty Cert",
-                badge: "Click",
+                badge: "",
                 title: "Manufacturer Quality & Craftsmanship Warranty",
                 subtitle: "JoyCraft HQ ISO 9001 Factory Quality Control Guarantee",
                 icon: "fa-award",

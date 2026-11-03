@@ -36,7 +36,7 @@
         background: linear-gradient(135deg, #8338ec, #ff6b8b);
         color: white;
         text-decoration: none;
-        border-radius: 10px;
+        border-radius: 12px;
         font-weight: bold;
         text-align: center;
         transition: 0.3s ease;
@@ -54,8 +54,19 @@
     <h1>Trividhi Labs</h1>
 
     <h2>
-      {{ product.name if product else "Product not found" }}
+      {{ product.name ifproduct else "Product not found" }}
     </h2>
+    {% if product and product.image %}
+<div style="text-align: center; margin: 20px 0;">
+    <img
+        src="{{ url_for('static', filename=product.image) }}"
+        alt="{{ product.name }}"
+        style="width: 100%; max-width: 400px; height: 300px; object-fit: contain;"
+    >
+</div>
+{% endif %}
+
+    
 
     <div class="field">
       <span class="label">Product ID:</span>
@@ -78,7 +89,7 @@
     </div>
 
     <div class="field">
-      <span class="label">Recommended Age:</span>
+      <span class="label">Recommended   Age:</span>
       <span>{{ product.age if product else "—" }}</span>
     </div>
 
@@ -101,7 +112,7 @@
     {% endif %}
 
     {% if not product %}
-      <p>Please scan a valid JoyCraft product QR code.</p>
+      <p>Please scan a valid Trividhi Lab product QR code.</p>
     {% endif %}
 
   </div>
